@@ -13,7 +13,6 @@ from tensorflow.keras.models import Model, Sequential
 from tensorflow.keras.optimizers import SGD
 from tensorflow.keras.callbacks import LearningRateScheduler
 from sklearn.preprocessing import normalize
-from sklearn.utils.linear_assignment_ import linear_assignment
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 if (sys.version[0] == 2):
@@ -21,6 +20,40 @@ if (sys.version[0] == 2):
 else:
     import pickle
 import numpy as np
+
+import lap
+
+
+def linear_assignment(cost_matrix):
+    """
+    linear_assignment function to give clusters meaningful labels.
+        
+    In this context, this function takes clusters with arbitrary labels and 
+    compares them to the test labels of the samples in that cluster. It then
+    relabels the clusters with the label that best matches the cluster.
+    For example, you might have a cluster that is mostly 7's, but because
+    k-means labels are arbitrary, that cluster was labelled 'cluster 3.
+    This function will look at the data within 'cluster 3' and decide that it
+    should be called 'cluster 7' instead, because it is mostly 7's.
+    
+    The original from sklearn is now deprecated, so using lap instead, so really
+    all this function does is reformat the output to emulate the scipy version.
+
+    Parameters
+    ----------
+    cost_matrix : numpy.ndarray
+        Square cost matrix of cluster labels
+
+    Returns
+    -------
+    numpy.ndarray
+        The cost matrix but rearranged to different cluster labels.
+
+    """
+    _, x, y = lap.lapjv(cost_matrix, extend_cost=True)
+    return np.array([[y[i], i] for i in x if i >= 0])
+
+
 
 class ClusteringLayer(Layer):
     '''
