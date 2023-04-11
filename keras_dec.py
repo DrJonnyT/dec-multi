@@ -6,14 +6,13 @@ Definition can accept somewhat custom neural networks. Defaults are from paper.
 '''
 import sys
 import numpy as np
-import keras.backend as K
-from keras.initializers import RandomNormal
-from keras.engine.topology import Layer, InputSpec
-from keras.models import Model, Sequential
-from keras.layers import Dense, Dropout, Input
-from keras.optimizers import SGD
+import tensorflow.keras.backend as K
+from tensorflow.keras.initializers import RandomNormal
+from tensorflow.keras.layers import Dense, Dropout, Input, Layer, InputSpec
+from tensorflow.keras.models import Model, Sequential
+from tensorflow.keras.optimizers import SGD
+from tensorflow.keras.callbacks import LearningRateScheduler
 from sklearn.preprocessing import normalize
-from keras.callbacks import LearningRateScheduler
 from sklearn.utils.linear_assignment_ import linear_assignment
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
