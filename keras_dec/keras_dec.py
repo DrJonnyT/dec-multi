@@ -24,7 +24,7 @@ else:
 import numpy as np
 
 
-    
+import pdb    
 
 
 def linear_assignment(cost_matrix):
@@ -99,6 +99,7 @@ class ClusteringLayer(Layer):
         self.W = K.variable(self.initial_weights)
         #Changed from the original self.trainable_weights
         self._trainable_weights = [self.W]
+        pdb.set_trace()
 
     def call(self, x, mask=None):
         q = 1.0/(1.0 + K.sqrt(K.sum(K.square(K.expand_dims(x, 1) - self.W), axis=2))**2 /self.alpha)
@@ -209,6 +210,8 @@ class DeepEmbeddingClustering(object):
         if self.pretrained_weights is None:
 
             iters_per_epoch = int(len(X) / self.batch_size)
+            if iters_per_epoch == 0:
+                iters_per_epoch = 1
             layerwise_epochs = max(int(layerwise_pretrain_iters / iters_per_epoch), 1)
             finetune_epochs = max(int(finetune_iters / iters_per_epoch), 1)
 
