@@ -15,7 +15,7 @@ def get_mnist():
 
 
 
-def subsample_mnist(X,Y,n):
+def subsample_mnist(X,Y,n,randomize=False):
     """
     Subsample the mnist digits by selecting the first n of each digit
 
@@ -43,5 +43,10 @@ def subsample_mnist(X,Y,n):
         #Select the first n points of that particular label and append
         Xsub.append(X[Y==label][0:n])
         Xsub.append(Y[Y==label][0:n])
+        
+    if randomize:
+        p = np.random.permutation(Xsub.shape[0])
+        Xsub = Xsub[p]
+        Ysub = Ysub[p]
         
     return Xsub, Ysub
