@@ -1,5 +1,6 @@
 from tensorflow.keras.datasets import mnist
 import numpy as np
+from random import shuffle
 
 def get_mnist():
     np.random.seed(1234) # set seed for deterministic ordering
@@ -38,15 +39,22 @@ def subsample_mnist(X,Y,n,randomize=False):
     """
     Xsub = []
     Ysub= []
-    
-    for label in np.unique(Y):
-        #Select the first n points of that particular label and append
-        Xsub.append(X[Y==label][0:n])
-        Xsub.append(Y[Y==label][0:n])
+    #p is the point number
+    p = np.arange(0,X.shape[0])
+    psub=[]
         
+    for label in np.unique(Y):
+        #Identify the first n points of this particular label
+        psub.append(p[Y==label][0:n])
+            
+    psub = np.sort(np.ravel(psub))
+    
     if randomize:
-        p = np.random.permutation(Xsub.shape[0])
-        Xsub = Xsub[p]
-        Ysub = Ysub[p]
+        shuffle(psub)
+    
+    #Select data subset
+    Xsub = X[psub]
+    Ysub = Y[psub]
+                
         
     return Xsub, Ysub
