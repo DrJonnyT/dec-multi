@@ -15,13 +15,16 @@ from tensorflow.keras.callbacks import LearningRateScheduler
 from sklearn.preprocessing import normalize
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
+from scipy.optimize import linear_sum_assignment
+
 if (sys.version[0] == 2):
     import cPickle as pickle
 else:
     import pickle
 import numpy as np
 
-import lap
+
+    
 
 
 def linear_assignment(cost_matrix):
@@ -36,7 +39,7 @@ def linear_assignment(cost_matrix):
     This function will look at the data within 'cluster 3' and decide that it
     should be called 'cluster 7' instead, because it is mostly 7's.
     
-    The original from sklearn is now deprecated, so using lap instead, so really
+    The original from sklearn is now deprecated, so using scipy v instead, so really
     all this function does is reformat the output to emulate the scipy version.
 
     Parameters
@@ -50,8 +53,8 @@ def linear_assignment(cost_matrix):
         The cost matrix but rearranged to different cluster labels.
 
     """
-    _, x, y = lap.lapjv(cost_matrix, extend_cost=True)
-    return np.array([[y[i], i] for i in x if i >= 0])
+    x, y = linear_sum_assignment(cost_matrix)
+    return np.array(list(zip(x, y)))
 
 
 
