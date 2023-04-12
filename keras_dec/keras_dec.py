@@ -97,7 +97,8 @@ class ClusteringLayer(Layer):
                                      shape=(None, input_dim))]
 
         self.W = K.variable(self.initial_weights)
-        self.trainable_weights = [self.W]
+        #Changed from the original self.trainable_weights
+        self._trainable_weights = [self.W]
 
     def call(self, x, mask=None):
         q = 1.0/(1.0 + K.sqrt(K.sum(K.square(K.expand_dims(x, 1) - self.W), axis=2))**2 /self.alpha)
