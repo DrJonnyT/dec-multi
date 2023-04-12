@@ -87,3 +87,9 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# Pickle files
+*.pkl
+
+# H5 model files
+*.h5
