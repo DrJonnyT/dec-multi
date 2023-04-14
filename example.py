@@ -6,26 +6,48 @@ tf.config.experimental.set_memory_growth(physical_devices[0], True)
 
 from keras_dec.keras_dec import DeepEmbeddingClustering
 from mnist.mnist import get_mnist, subsample_mnist
+from mnist.plot import plot_mnist_10x10
 
 from sklearn.cluster import KMeans
 
-    
 
-
+#Get MNIST data
 X, Y  = get_mnist()
+    
+#%%Run accuracy test with only 100 data points
 
-# #Testing dataset with only 100 points
-# X100 = X[0:100]
-# Y100 = Y[0:100]
 
-# c = DeepEmbeddingClustering(n_clusters=10, input_dim=784,batch_size=256)
-# c.initialize(X100, finetune_iters=10000, layerwise_pretrain_iters=5000)
-# c.cluster(X100, y=Y100,iter_max=1000)
+#Testing dataset with only 100 points
+X100, Y100 = subsample_mnist(X,Y,10)
+
+
+c = DeepEmbeddingClustering(n_clusters=10, input_dim=784)
+c.initialize(X100, finetune_iters=100000, layerwise_pretrain_iters=50000)
+
+#Run KMeans on the initial latent space
+Y100_kmeans_unfit = KMeans(n_clusters=10, n_init=20).fit_predict(c.encoder.predict(X100))
+Y100_kmeans_acc_unfit, _ = c.cluster_acc(Y100,Y100_kmeans_unfit)
+
+c.cluster(X100, y=Y100,iter_max=1000)
+#Run kmeans again
+Y100_kmeans_fit = KMeans(n_clusters=10, n_init=20).fit_predict(c.encoder.predict(X100))
+Y100_kmeans_acc_fit, _ = c.cluster_acc(Y100,Y100_kmeans_fit)
+
+
+
+#%%Test plot
+
+fig,ax = plot_mnist_10x10(X, Y, "test title")
+
+#%%
 
 
 #Original code with original iterations
+#This will run on my home 2060 but not on work laptop GPU
+#Not yet tried on colab, presumably it would work
 c = DeepEmbeddingClustering(n_clusters=10, input_dim=784)
 c.initialize(X, finetune_iters=100000, layerwise_pretrain_iters=50000)
+
 
 #Run KMeans on the initial latent space
 kmeans = KMeans(n_clusters=10, n_init=20)
