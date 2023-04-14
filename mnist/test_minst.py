@@ -1,11 +1,11 @@
 from mnist.mnist import get_mnist, subsample_mnist
+from mnist.plot import plot_mnist_10x10
 import numpy as np
 
 def test_get_mnist():
     X, Y  = get_mnist()
     assert np.shape(X) == (70000, 784)
-    assert np.shape(Y) == (70000,)
-    
+    assert np.shape(Y) == (70000,)  
     
     
 def test_subsample_mnist():
@@ -23,3 +23,9 @@ def test_subsample_mnist():
     #Check randomized and non-randomized data are the same if you sort them
     assert np.array_equal( np.sort(X100r[Y100r == 0],axis=0), np.sort(X100[Y100 == 0],axis=0) )
     
+    
+def test_plot_mnist_10x10():
+    X,Y = get_mnist()
+    
+    fig,ax = plot_mnist_10x10(X, Y, "test title")
+    #Just see if it gets this far without an error
