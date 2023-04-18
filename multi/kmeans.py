@@ -46,7 +46,7 @@ def kmeans_n_times_csv(X, n, num_clusters, csv_file, newcsv=True, **kwargs):
       
     
     #Make empty dataframe
-    df_kmeans = pd.DataFrame(index=[f'sample_{i}' for i in range(len(X))],dtype='int32')
+    df_kmeans = pd.DataFrame(index=[f'sample_{i}' for i in range(len(X))])
     
     #Add the corresponding labels
     if 'labels' in kwargs:
