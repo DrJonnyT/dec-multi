@@ -96,3 +96,6 @@ ENV/
 
 #Output folder
 output/
+
+#Temp foler
+temp/
