@@ -1,4 +1,6 @@
+from mnist.mnist import get_mnist
 import pandas as pd
+import numpy as np
 from sklearn.cluster import KMeans
 from threadpoolctl import threadpool_limits
 import warnings
@@ -83,3 +85,72 @@ def kmeans_n_times_csv(X, n, num_clusters, csv_file, newcsv=True, **kwargs):
         
 
     return df_kmeans
+
+
+def kmeans_mnist_n_times(n10, n_kmeans, num_clusters):
+    """
+    Run k-means clustering `n_kmeans` times on mnist digits data, with a random
+    sample of 'n10' of each digit. With `num_clusters` clusters.
+    After, append the resulting cluster assignments to a CSV file `csv_file`.
+    The reason the clustering and file writing are tied into the same function
+    is so you still save the data if it crashes halfway through, which may
+    not happen for kmeans but is much more likely for other similar functions
+    with other clustering, e.g. deep embedded clustering.
+    In the saved csv file, each sample is a row and each run of kmeans is a
+    column.
+    
+    Parameters
+    ----------
+    n10 : int
+        The number of each digits to sample
+    n_kmeans : int
+        The number of times to resample and run kmeans
+    num_clusters : int
+        The number of clusters
+        
+    Returns
+    -------
+    df_kmeans : pandas DataFrame
+        DataFrame of the same data from the csv. Rows are samples and columns
+        are cluster labels from different runs of kmeans.
+    df_labels : pandas DataFrame
+        Dataframe of the correct labels for the equivalent column in df_kmeans
+
+    """
+    
+    #Get mnist dataset
+    X,Y = get_mnist()
+    
+    #Make empty dataframes
+    df_kmeans = pd.DataFrame(index=[f'sample_{i}' for i in range(n10*10)])
+    df_labels = pd.DataFrame(index=[f'sample_{i}' for i in range(n10*10)])
+    
+       
+    for run in range(n_kmeans):
+        #Empty lists for the subsampled data
+        Xsub = np.zeros((0, 784))
+        Ysub = np.zeros(0,dtype='int')  
+        
+        
+        # Select 10 instances of each digit (0-9) at random
+        for digit in range(10):
+            indices = np.where(Y == digit)[0]
+            indices = np.random.choice(indices, size=10, replace=False)
+            Xsub = np.vstack((Xsub,X[indices]))
+            Ysub = np.append(Ysub,Y[indices])
+
+        
+        #Control the number of threads in kmeans
+        with threadpool_limits(limits=1, user_api='blas'):
+            #Ignore the warning about the memory leak
+            warnings.filterwarnings('ignore')
+        
+            # Fit the k-means model to the data
+            kmeans = KMeans(n_clusters=num_clusters).fit(Xsub)
+
+        #Append labels to the dataframes
+        df_kmeans[f'kmeans_{run+1}'] = kmeans.labels_
+        df_labels[f'labels_{run+1}'] = Ysub
+        
+        
+    return df_kmeans, df_labels
