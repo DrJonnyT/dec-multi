@@ -47,6 +47,10 @@ def rand_index_arr(df,labels):
 
     """
     
+    #Remove the actual data labels
+    if df.columns[0] == 'labels':
+        df.drop('labels',axis=1,inplace=True)
+    
     rand_arr = [adjusted_rand_score(labels,df[col]) for col in df.columns]
     return rand_arr
 
@@ -71,6 +75,11 @@ def accuracy_arr(df,labels):
         Array of accuracy corresponding to each column in df
 
     """
+    
+    #Remove the actual data labels
+    if df.columns[0] == 'labels':
+        df.drop('labels',axis=1,inplace=True)
+        
     c = DeepEmbeddingClustering(n_clusters=10,input_dim=(784))
     acc_arr = [c.cluster_acc(labels,df[col])[0] for col in df.columns]
     return acc_arr
