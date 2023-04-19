@@ -183,16 +183,16 @@ class DeepEmbeddingClustering(object):
                 Dropout(dropout_fraction, name='decoder_dropout_%d'%decoder_index),
                 decoder
             ])
-            autoencoder.compile(loss='mse', optimizer=SGD(lr=self.learning_rate, decay=0, momentum=0.9))
+            autoencoder.compile(loss='mse', optimizer=SGD(learning_rate=self.learning_rate, decay=0, momentum=0.9))
             self.layer_wise_autoencoders.append(autoencoder)
 
         # build the end-to-end autoencoder for finetuning
         # Note that at this point dropout is discarded
         self.encoder = Sequential(self.encoders)
-        self.encoder.compile(loss='mse', optimizer=SGD(lr=self.learning_rate, decay=0, momentum=0.9))
+        self.encoder.compile(loss='mse', optimizer=SGD(learning_rate=self.learning_rate, decay=0, momentum=0.9))
         self.decoders.reverse()
         self.autoencoder = Sequential(self.encoders + self.decoders)
-        self.autoencoder.compile(loss='mse', optimizer=SGD(lr=self.learning_rate, decay=0, momentum=0.9))
+        self.autoencoder.compile(loss='mse', optimizer=SGD(learning_rate=self.learning_rate, decay=0, momentum=0.9))
 
         if cluster_centres is not None:
             assert cluster_centres.shape[0] == self.n_clusters
@@ -232,7 +232,7 @@ class DeepEmbeddingClustering(object):
                                         activation='relu', weights=weights,
                                         name='encoder_dense_copy_%d'%i)
                     encoder_model = Sequential([dense_layer])
-                    encoder_model.compile(loss='mse', optimizer=SGD(lr=self.learning_rate, decay=0, momentum=0.9))
+                    encoder_model.compile(loss='mse', optimizer=SGD(learning_rate=self.learning_rate, decay=0, momentum=0.9))
                     current_input = encoder_model.predict(current_input)
 
                 autoencoder.fit(current_input, current_input, 
