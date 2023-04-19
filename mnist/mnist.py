@@ -16,7 +16,7 @@ def get_mnist():
 
 
 
-def subsample_mnist(X,Y,n,randomize=False):
+def subsample_mnist(X,Y,n10,randomize=False):
     """
     Subsample the mnist digits by selecting the first n of each digit
 
@@ -26,7 +26,7 @@ def subsample_mnist(X,Y,n,randomize=False):
         mnist digits X (images)
     Y : array
         mnist digits Y (labels)
-    n : int
+    n10 : int
         The number of each digit to output
     randomize: bool
         If true, it will randomise Xsub and Ysub AFTER it selects the digits
@@ -47,7 +47,7 @@ def subsample_mnist(X,Y,n,randomize=False):
         
     for label in np.unique(Y):
         #Identify the first n points of this particular label
-        psub.append(p[Y==label][0:n])
+        psub.append(p[Y==label][0:n10])
             
     psub = np.sort(np.ravel(psub))
     
@@ -60,3 +60,5 @@ def subsample_mnist(X,Y,n,randomize=False):
                 
         
     return Xsub, Ysub
+
+
