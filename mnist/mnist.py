@@ -28,6 +28,8 @@ def subsample_mnist(X,Y,n,randomize=False):
         mnist digits Y (labels)
     n : int
         The number of each digit to output
+    randomize: bool
+        If true, it will randomise Xsub and Ysub AFTER it selects the digits
 
     Returns
     -------
