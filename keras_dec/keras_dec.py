@@ -91,7 +91,7 @@ class ClusteringLayer(Layer):
         super(ClusteringLayer, self).__init__(**kwargs)
 
     def build(self, input_shape):
-        assert len(input_shape) == 2
+        assert len(input_shape) == 2, "input_shape must have len of 2"
         input_dim = input_shape[1]
         self.input_spec = [InputSpec(dtype=K.floatx(),
                                      shape=(None, input_dim))]
@@ -107,11 +107,11 @@ class ClusteringLayer(Layer):
         return q
 
     def get_output_shape_for(self, input_shape):
-        assert input_shape and len(input_shape) == 2
+        assert input_shape and len(input_shape) == 2, "input_shape must exist and have len of 2"
         return (input_shape[0], self.output_dim)
 
     def compute_output_shape(self, input_shape):
-        assert input_shape and len(input_shape) == 2
+        assert input_shape and len(input_shape) == 2, "input_shape must exist and have len of 2"
         return (input_shape[0], self.output_dim)
 
     def get_config(self):
@@ -195,8 +195,8 @@ class DeepEmbeddingClustering(object):
         self.autoencoder.compile(loss='mse', optimizer=SGD(learning_rate=self.learning_rate, decay=0, momentum=0.9))
 
         if cluster_centres is not None:
-            assert cluster_centres.shape[0] == self.n_clusters
-            assert cluster_centres.shape[1] == self.encoder.layers[-1].output_dim
+            assert cluster_centres.shape[0] == self.n_clusters, "number of clusters is not consistent"
+            assert cluster_centres.shape[1] == self.encoder.layers[-1].output_dim, "number of data points for clustering is not consistent with autoencoder"
 
         if self.pretrained_weights is not None:
             self.autoencoder.load_weights(self.pretrained_weights)
@@ -277,7 +277,7 @@ class DeepEmbeddingClustering(object):
 
     def cluster_acc(self, y_true, y_pred):
         #Check y_true and y_pred are the same size
-        assert y_pred.size == y_true.size
+        assert y_pred.size == y_true.size, "y_true and y_pred are not the same size"
         #Generate the cost matrix
         D = max(y_pred.max(), y_true.max())+1
         w = np.zeros((D, D), dtype=np.int64)
@@ -325,15 +325,16 @@ class DeepEmbeddingClustering(object):
         print('Update interval', update_interval)
         
         if save_interval <= 0:
-            print('Save interval ', save_interval, ', not saving model')
+            print('Save intervall ', save_interval, ', not saving model')
         elif save_interval is None:
             # Default 50 epochs
             save_interval = X.shape[0]/self.batch_size*50
             print('Save interval', save_interval)
         else:
             print('Save interval', save_interval)
-
-        assert save_interval >= update_interval
+        
+        if save_interval > 0:
+            assert save_interval >= update_interval, "update_interval must be >= save_interval (unless save_interval is <=0 for not saving)"
 
         train = True
         iteration, index = 0, 0
