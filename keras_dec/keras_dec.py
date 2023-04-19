@@ -291,16 +291,47 @@ class DeepEmbeddingClustering(object):
                 iter_max=1e6,
                 save_interval=None,
                 **kwargs):
+        """
+        Perform the clustering
+
+        Parameters
+        ----------
+        X : ndarray
+            Image data
+        y : int array, optional
+            Labels The default is None.
+        tol : float, optional
+            Tolerance The default is 0.01.
+        update_interval : int, optional
+            Number of epochs per update. The default is 1 epoch.
+        iter_max : TYPE, optional
+            DESCRIPTION. The default is 1e6.
+        save_interval : int, optional
+            Number of training steps per model save. If this is <=0 it will 
+            not save the model The default is 50 epochs.
+        **kwargs : TYPE
+            DESCRIPTION.
+
+        Returns
+        -------
+        TYPE
+            DESCRIPTION.
+
+        """
 
         if update_interval is None:
             # 1 epochs
             update_interval = X.shape[0]/self.batch_size
         print('Update interval', update_interval)
-
-        if save_interval is None:
-            # 50 epochs
+        
+        if save_interval <= 0:
+            print('Save interval ', save_interval, ', not saving model')
+        elif save_interval is None:
+            # Default 50 epochs
             save_interval = X.shape[0]/self.batch_size*50
-        print('Save interval', save_interval)
+            print('Save interval', save_interval)
+        else:
+            print('Save interval', save_interval)
 
         assert save_interval >= update_interval
 
@@ -354,16 +385,17 @@ class DeepEmbeddingClustering(object):
                 index += 1
 
             # save intermediate
-            if iteration % save_interval == 0:
-                z = self.encoder.predict(X)
-                pca = PCA(n_components=2).fit(z)
-                z_2d = pca.transform(z)
-                clust_2d = pca.transform(self.cluster_centres)
-                # save states for visualization
-                pickle.dump({'z_2d': z_2d, 'clust_2d': clust_2d, 'q': self.q, 'p': self.p},
-                            open('c'+str(iteration)+'.pkl', 'wb'))
-                # save DEC model checkpoints
-                self.DEC.save('DEC_model_'+str(iteration)+'.h5')
+            if save_interval > 0:
+                if iteration % save_interval == 0:
+                    z = self.encoder.predict(X)
+                    pca = PCA(n_components=2).fit(z)
+                    z_2d = pca.transform(z)
+                    clust_2d = pca.transform(self.cluster_centres)
+                    # save states for visualization
+                    pickle.dump({'z_2d': z_2d, 'clust_2d': clust_2d, 'q': self.q, 'p': self.p},
+                                open('c'+str(iteration)+'.pkl', 'wb'))
+                    # save DEC model checkpoints
+                    self.DEC.save('DEC_model_'+str(iteration)+'.h5')
 
             iteration += 1
             sys.stdout.flush()
