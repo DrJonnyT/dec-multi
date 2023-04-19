@@ -1,13 +1,11 @@
-from multi.kmeans import kmeans_n_times_csv
+from multi.kmeans import kmeans_n_times_csv, kmeans_mnist_n_times
 from multi.dec import dec_n_times_csv
 from multi.comparison import mean_rand_index
-from mnist.mnist import get_mnist, subsample_mnist
 
 
 import numpy as np
 import pandas as pd
 from sklearn.metrics import adjusted_rand_score
-import os
 from shutil import rmtree
 
 
@@ -74,6 +72,33 @@ def test_mean_rand_index():
     #The mean rand should be 1 because you should always come up with the same
     #set of labels for this Xdata
     assert mean_rand == 1
+
+
+
+
+def test_kmeans_mnist_n_times():
+    df_kmeans_labels, df_kmeans_Y = kmeans_mnist_n_times(10, 5, 10)
+    
+    assert np.shape(df_kmeans_labels) == (100,5)
+    assert np.shape(df_kmeans_Y) == (100,5)
+    
+    assert df_kmeans_labels.index[0] == "sample_0"
+    assert df_kmeans_labels.columns[0] == "kmeans_1"
+    assert df_kmeans_Y.columns[0] == "labels_1"
+    
+    assert np.array_equal(np.unique(df_kmeans_labels['kmeans_1']),[0,1,2,3,4,5,6,7,8,9])
+
+
+
+
+
+
+
+
+
+
+
+
 
     
 # #After all tests completed, delete the temp directory
