@@ -60,5 +60,3 @@ def subsample_mnist(X,Y,n10,randomize=False):
                 
         
     return Xsub, Ysub
-
-
