@@ -87,7 +87,7 @@ def dec_n_times_csv(X,Y, n, num_clusters, csv_file, newcsv=True, **kwargs):
                                     input_dim=np.shape(X)[1])
         c.initialize(X, finetune_iters=finetune_iters,
                      layerwise_pretrain_iters=layerwise_pretrain_iters)
-        c.cluster(X, y=Y,iter_max=iter_max)
+        c.cluster(X, y=Y,iter_max=iter_max,save_interval=0)
 
         #Load the csv, add a column for the DEC cluster labels, then save
         df_dec = pd.read_csv(csv_file,index_col=0)
