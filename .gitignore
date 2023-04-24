@@ -99,3 +99,6 @@ output/
 
 #Temp foler
 temp/
+
+#pytest log
+pytest_log.txt
