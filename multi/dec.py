@@ -221,7 +221,7 @@ def dec_mnist_n_times_csv(n10, n_runs, n_clusters, csv_file, newcsv=True, **kwar
         # Select 10 instances of each digit (0-9) at random
         for digit in range(10):
             indices = np.where(Y == digit)[0]
-            indices = np.random.choice(indices, size=10, replace=False)
+            indices = np.random.choice(indices, size=n10, replace=False)
             Xsub = np.vstack((Xsub,X[indices]))
             Ysub = np.append(Ysub,Y[indices])
         
