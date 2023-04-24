@@ -20,13 +20,13 @@ def dec_n_times_csv(X,Y, n, n_clusters, csv_file, newcsv=True, **kwargs):
     Parameters
     ----------
     X : array
-        The data to be clustered. Each row is a set of data
+        The data to be clustered. Each row is a set of data.
     n : int
-        The number of times to run kmeans
+        The number of times to run kmeans.
     n_clusters : int
-        The number of clusters
+        The number of clusters.
     csv_file : string
-        Path to CSV output file
+        Path to CSV output file.
     newcsv : bool, default = True
         If this is true, create a new csv and overwrite any that was there
         before. If false, appends to existing csv if one exists.
@@ -121,15 +121,15 @@ def dec_mnist_n_times_csv(n10, n_runs, n_clusters, csv_file, newcsv=True, **kwar
     Parameters
     ----------
     n10 : int
-        The number of each digits to sample
+        The number of each digits to sample.
     n_runs : int
         The number of times to resample and run deep embedded clustering. Note
         when appending that this is the total number of runs, including any
         that are already in the files.
     n_clusters : int
-        The number of clusters
+        The number of clusters.
     csv_file : string
-        Path to CSV output file
+        Path to CSV output file.
     newcsv : bool, default = True
         If this is true, create a new csv and overwrite any that was there
         before. If false, appends to existing csv if one exists.
@@ -149,7 +149,7 @@ def dec_mnist_n_times_csv(n10, n_runs, n_clusters, csv_file, newcsv=True, **kwar
         DataFrame of the same data from the csv. Rows are samples and columns
         are cluster labels from different runs of DEC.
     df_labels : pandas DataFrame
-        Dataframe of the relevant labels from the mnist dataset
+        Dataframe of the relevant labels from the mnist dataset.
 
     """
     

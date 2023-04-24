@@ -8,11 +8,11 @@ def plot_mnist_10x10(images, labels, suptitle):
     Parameters
     ----------
     images : array of images
-        MNIST images
+        MNIST images.
     labels : array of int
-        MNIST labels corresponding to X
+        MNIST labels corresponding to X.
     suptitle : string
-        Suptitle of the plot
+        Suptitle of the plot.
 
     Returns
     -------

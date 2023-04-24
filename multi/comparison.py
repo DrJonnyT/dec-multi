@@ -27,6 +27,7 @@ def mean_rand_index(df):
 
 
 def rand_index_arr(df,labels):
+
     """
     Calculate the Rand index for all columns in a pandas DataFrame 'df'
     (where each column represents a different set of cluster labels), and a
@@ -35,7 +36,7 @@ def rand_index_arr(df,labels):
     Parameters
     ----------
     df : DataFrame
-        Each column is a set of cluster labels. dtype must be int
+        Each column is a set of cluster labels. dtype must be int.
     labels : array
         cluster labels, of the same length as the number of rows in df.
         dtype must be int
@@ -43,7 +44,7 @@ def rand_index_arr(df,labels):
     Returns
     -------
     rand_arr : numpy array
-        Array of rand index corresponding to each column in df
+        Array of rand index corresponding to each column in df.
 
     """
     
@@ -64,7 +65,7 @@ def accuracy_arr(df,labels):
     Parameters
     ----------
     df : DataFrame
-        Each column is a set of cluster labels. dtype must be int
+        Each column is a set of cluster labels. dtype must be int.
     labels : array
         cluster labels, of the same length as the number of rows in df.
         dtype must be int
@@ -72,7 +73,7 @@ def accuracy_arr(df,labels):
     Returns
     -------
     acc_arr : numpy array
-        Array of accuracy corresponding to each column in df
+        Array of accuracy corresponding to each column in df.
 
     """
     

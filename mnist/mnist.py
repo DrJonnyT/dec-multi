@@ -23,20 +23,20 @@ def subsample_mnist(X,Y,n10,randomize=False):
     Parameters
     ----------
     X : array
-        mnist digits X (images)
+        mnist digits X (images).
     Y : array
-        mnist digits Y (labels)
+        mnist digits Y (labels).
     n10 : int
-        The number of each digit to output
+        The number of each digit to output.
     randomize: bool
-        If true, it will randomise Xsub and Ysub AFTER it selects the digits
+        If true, it will randomise Xsub and Ysub AFTER it selects the digits.
 
     Returns
     -------
     Xsub : array
-        The first n of mnist digits X
+        The first n of mnist digits X.
     Ysub : array
-        The first n of mnist digits Y
+        The first n of mnist digits Y.
 
     """
     Xsub = []
