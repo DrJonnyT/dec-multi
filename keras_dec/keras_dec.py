@@ -243,7 +243,7 @@ class DeepEmbeddingClustering(object):
             print('Finetuning autoencoder')
             
             #update encoder and decoder weights:
-            self.autoencoder.fit(X, X, batch_size=self.batch_size, epochs=finetune_epochs, callbacks=[lr_schedule])
+            self.autoencoder.fit(X, X, batch_size=self.batch_size, epochs=finetune_epochs, callbacks=[lr_schedule],verbose=verbose)
 
             if save_autoencoder:
                 self.autoencoder.save_weights('autoencoder.h5')
