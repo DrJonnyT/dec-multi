@@ -233,7 +233,7 @@ class DeepEmbeddingClustering(object):
                                         name='encoder_dense_copy_%d'%i)
                     encoder_model = Sequential([dense_layer])
                     encoder_model.compile(loss='mse', optimizer=SGD(learning_rate=self.learning_rate, decay=0, momentum=0.9))
-                    current_input = encoder_model.predict(current_input)
+                    current_input = encoder_model.predict(current_input,verbose=verbose)
 
                 autoencoder.fit(current_input, current_input, 
                                 batch_size=self.batch_size, epochs=layerwise_epochs, callbacks=[lr_schedule], verbose=verbose)
@@ -260,7 +260,7 @@ class DeepEmbeddingClustering(object):
         print('Initializing cluster centres with k-means.')
         if self.cluster_centres is None:
             kmeans = KMeans(n_clusters=self.n_clusters, n_init=20)
-            self.y_pred = kmeans.fit_predict(self.encoder.predict(X))
+            self.y_pred = kmeans.fit_predict(self.encoder.predict(X,verbose=verbose))
             self.cluster_centres = kmeans.cluster_centers_
 
         # prepare DEC model
