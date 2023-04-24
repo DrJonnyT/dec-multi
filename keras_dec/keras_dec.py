@@ -205,7 +205,7 @@ class DeepEmbeddingClustering(object):
         weight = q**2 / q.sum(0)
         return (weight.T / weight.sum(1)).T
 
-    def initialize(self, X, save_autoencoder=False, layerwise_pretrain_iters=50000, finetune_iters=100000):
+    def initialize(self, X, save_autoencoder=False, layerwise_pretrain_iters=50000, finetune_iters=100000, verbose="auto"):
         if self.pretrained_weights is None:
 
             iters_per_epoch = int(len(X) / self.batch_size)
@@ -236,7 +236,7 @@ class DeepEmbeddingClustering(object):
                     current_input = encoder_model.predict(current_input)
 
                 autoencoder.fit(current_input, current_input, 
-                                batch_size=self.batch_size, epochs=layerwise_epochs, callbacks=[lr_schedule])
+                                batch_size=self.batch_size, epochs=layerwise_epochs, callbacks=[lr_schedule], verbose=verbose)
                 self.autoencoder.layers[i].set_weights(autoencoder.layers[1].get_weights())
                 self.autoencoder.layers[len(self.autoencoder.layers) - i - 1].set_weights(autoencoder.layers[-1].get_weights())
             
