@@ -87,9 +87,9 @@ def kmeans_n_times_csv(X, n, num_clusters, csv_file, newcsv=True, **kwargs):
     return df_kmeans
 
 
-def kmeans_mnist_n_times(n10, n_kmeans, num_clusters):
+def kmeans_mnist_n_times(n10, n_runs, num_clusters):
     """
-    Run k-means clustering `n_kmeans` times on mnist digits data, with a random
+    Run k-means clustering `n_runs` times on mnist digits data, with a random
     sample of 'n10' of each digit. With `num_clusters` clusters.
     After, append the resulting cluster assignments to a CSV file `csv_file`.
     The reason the clustering and file writing are tied into the same function
@@ -103,7 +103,7 @@ def kmeans_mnist_n_times(n10, n_kmeans, num_clusters):
     ----------
     n10 : int
         The number of each digits to sample
-    n_kmeans : int
+    n_runs : int
         The number of times to resample and run kmeans
     num_clusters : int
         The number of clusters
@@ -126,7 +126,7 @@ def kmeans_mnist_n_times(n10, n_kmeans, num_clusters):
     df_labels = pd.DataFrame(index=[f'sample_{i}' for i in range(n10*10)])
     
        
-    for run in range(n_kmeans):
+    for run in range(n_runs):
         #Empty lists for the subsampled data
         Xsub = np.zeros((0, 784))
         Ysub = np.zeros(0,dtype='int')  
