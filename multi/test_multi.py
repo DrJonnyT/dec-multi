@@ -79,16 +79,16 @@ def test_mean_rand_index():
 
 
 def test_kmeans_mnist_n_times():
-    df_kmeans_labels, df_kmeans_Y = kmeans_mnist_n_times(10, 5, 10)
+    df_kmeans, df_kmeans_labels = kmeans_mnist_n_times(10, 5, 10)
     
+    assert np.shape(df_kmeans) == (100,5)
     assert np.shape(df_kmeans_labels) == (100,5)
-    assert np.shape(df_kmeans_Y) == (100,5)
     
-    assert df_kmeans_labels.index[0] == "sample_0"
-    assert df_kmeans_labels.columns[0] == "kmeans_1"
-    assert df_kmeans_Y.columns[0] == "labels_1"
+    assert df_kmeans.index[0] == "sample_0"
+    assert df_kmeans.columns[0] == "kmeans_1"
+    assert df_kmeans_labels.columns[0] == "labels_1"
     
-    assert np.array_equal(np.unique(df_kmeans_labels['kmeans_1']),[0,1,2,3,4,5,6,7,8,9])
+    assert np.array_equal(np.unique(df_kmeans['kmeans_1']),[0,1,2,3,4,5,6,7,8,9])
     
     #Test with too many mnist digits
     with pytest.raises(Exception) as e_info:
