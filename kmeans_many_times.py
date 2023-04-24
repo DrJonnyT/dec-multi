@@ -1,12 +1,4 @@
-#Set tensorflow gpu memory to be able to grow
-import tensorflow as tf
-physical_devices = tf.config.experimental.list_physical_devices('GPU')
-tf.config.experimental.set_memory_growth(physical_devices[0], True)
-
 from multi.kmeans import kmeans_mnist_n_times_csv
-
-
-
 
 #Setup what sizes of dataset we would like
 #The maximum is 6313, so base it off that
