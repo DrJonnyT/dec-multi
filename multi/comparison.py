@@ -53,7 +53,7 @@ def rand_index_arr(df,labels):
         df.drop('labels',axis=1,inplace=True)
     
     rand_arr = [adjusted_rand_score(labels,df[col]) for col in df.columns]
-    return rand_arr
+    return np.array(rand_arr)
 
 
 def accuracy_arr(df,labels):
@@ -83,4 +83,4 @@ def accuracy_arr(df,labels):
         
     c = DeepEmbeddingClustering(n_clusters=10,input_dim=(784))
     acc_arr = [c.cluster_acc(labels,df[col])[0] for col in df.columns]
-    return acc_arr
+    return np.array(acc_arr)
