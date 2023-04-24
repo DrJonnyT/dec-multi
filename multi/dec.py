@@ -37,6 +37,7 @@ def dec_n_times_csv(X,Y, n, num_clusters, csv_file, newcsv=True, **kwargs):
         layerwise_pretrain_iters : argument for 
         DeepEmbeddingClustering.initialize (see keras_dec)
         iter_max : argument for DeepEmbeddingClustering.cluster (see keras_dec)
+        verbose : verbose flag for initialize step
         
         
     Returns
@@ -61,6 +62,10 @@ def dec_n_times_csv(X,Y, n, num_clusters, csv_file, newcsv=True, **kwargs):
         iter_max = kwargs.get("iter_max")
     else:
         iter_max = 1000
+    if "verbose" in kwargs:
+        verbose = kwargs.get("verbose")
+    else:
+        verbose = "auto"
       
     
     #Make empty dataframe
@@ -81,14 +86,15 @@ def dec_n_times_csv(X,Y, n, num_clusters, csv_file, newcsv=True, **kwargs):
         #Make a new csv. Make the directory first.
         csv_path.parent.mkdir(parents=True, exist_ok=True)
         df_dec.to_csv(csv_file)
-        
+    
     
     for i in range(n):
         
         c = DeepEmbeddingClustering(n_clusters=num_clusters,
                                     input_dim=np.shape(X)[1])
         c.initialize(X, finetune_iters=finetune_iters,
-                     layerwise_pretrain_iters=layerwise_pretrain_iters)
+                     layerwise_pretrain_iters=layerwise_pretrain_iters,
+                     verbose=verbose)
         c.cluster(X, y=Y,iter_max=iter_max,save_interval=0)
 
         #Load the csv, add a column for the DEC cluster labels, then save
@@ -117,7 +123,9 @@ def dec_mnist_n_times_csv(n10, n_runs, num_clusters, csv_file, newcsv=True, **kw
     n10 : int
         The number of each digits to sample
     n_runs : int
-        The number of times to resample and run deep embedded clustering
+        The number of times to resample and run deep embedded clustering. Note
+        when appending that this is the total number of runs, including any
+        that are already in the files.
     num_clusters : int
         The number of clusters
     csv_file : string
@@ -132,6 +140,7 @@ def dec_mnist_n_times_csv(n10, n_runs, num_clusters, csv_file, newcsv=True, **kw
         layerwise_pretrain_iters : argument for 
         DeepEmbeddingClustering.initialize (see keras_dec)
         iter_max : argument for DeepEmbeddingClustering.cluster (see keras_dec)
+        verbose : verbose flag for initialize step
         
         
     Returns
@@ -158,6 +167,10 @@ def dec_mnist_n_times_csv(n10, n_runs, num_clusters, csv_file, newcsv=True, **kw
         iter_max = kwargs.get("iter_max")
     else:
         iter_max = 1000
+    if "verbose" in kwargs:
+        verbose = kwargs.get("verbose")
+    else:
+        verbose = "auto"
         
     
     #Get mnist dataset
@@ -190,6 +203,11 @@ def dec_mnist_n_times_csv(n10, n_runs, num_clusters, csv_file, newcsv=True, **kw
         #Load the csv file and see how many runs have been completed so far
         df_dec = pd.read_csv(csv_file,index_col=0)
         n_runs_completed = df_dec.shape[1]
+        
+        #Put this break in explicitly
+        if n_runs_completed >= n_runs:
+            break
+        
         #Load the labels csv
         df_labels =  pd.read_csv(labels_file,index_col=0)
         
@@ -210,7 +228,8 @@ def dec_mnist_n_times_csv(n10, n_runs, num_clusters, csv_file, newcsv=True, **kw
         c = DeepEmbeddingClustering(n_clusters=num_clusters,
                                     input_dim=np.shape(X)[1])
         c.initialize(Xsub, finetune_iters=finetune_iters,
-                     layerwise_pretrain_iters=layerwise_pretrain_iters)
+                     layerwise_pretrain_iters=layerwise_pretrain_iters,
+                     verbose=verbose)
         c.cluster(Xsub, y=Ysub,iter_max=iter_max,save_interval=0)
 
         #Add a column for the DEC cluster labels, then save
@@ -218,7 +237,10 @@ def dec_mnist_n_times_csv(n10, n_runs, num_clusters, csv_file, newcsv=True, **kw
         df_dec.to_csv(csv_file)
         
         #Also save labels
+        df_labels[f'labels_{n_runs_completed+1}'] = Ysub
         df_labels.to_csv(labels_file)
+        
+        n_runs_completed = n_runs_completed + 1
         
         #Catch in case you get stuck in an infinite loop
         n_runs_loop = n_runs_loop + 1
