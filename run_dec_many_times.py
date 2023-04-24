@@ -4,21 +4,23 @@ physical_devices = tf.config.experimental.list_physical_devices('GPU')
 tf.config.experimental.set_memory_growth(physical_devices[0], True)
 
 from multi.dec import dec_mnist_n_times_csv
+import params
 
-#Setup what sizes of dataset we would like
-#The maximum is 6313, so base it off that
-#This number is the number of each digit we will use
-n10_array = [6,63,631,6313]
+#Run Deep embedded clustering lots of times and save the results to csv files
+#Load settings from params.py file
+#An array of the number of copies of each digit to use
+n10_array = params.n10_array
+#The number of times to run kmeans
+n_runs = params.n_runs
+#Number of clusters
+n_clusters = params.n_clusters
+#Output folder
+csv_folder = params.csv_folder
 
-
-#Run kmeans lots of times
-n_runs = 100
-n_clusters = 10
-csv_folder = "./output/"
 #Loop through different sized datasets
 for n10 in n10_array:
     csv_file = csv_folder + f"dec_{n10}.csv"
-    dec_mnist_n_times_csv(n10, n_runs, n_clusters,csv_file,newcsv=False,
+    dec_mnist_n_times_csv(n10, n_runs, n_clusters,csv_file,newcsv=True,
                     finetune_iters=1000,layerwise_pretrain_iters=500,iter_max=10,
                     verbose=0)
 
