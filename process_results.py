@@ -1,7 +1,10 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import params
+
+#Parameters file
+#import params
+import params.testing as params
 
 from mnist.plot import plot_mnist_10x10
 from multi.comparison import mean_rand_index, rand_index_arr, accuracy_arr
@@ -54,9 +57,14 @@ ax.errorbar(n10_array,accuracy_dec_mean,accuracy_kmeans_std,c='tab:blue',fmt='-o
 
 #Plot with shaded error bar
 fig,ax = plt.subplots()
-ax.plot(n10_array,accuracy_kmeans_mean,c='k')
+ax.plot(n10_array,accuracy_kmeans_mean,c='k',label='kmeans')
 ax.fill_between(n10_array, accuracy_kmeans_mean-accuracy_kmeans_std, accuracy_kmeans_mean+accuracy_kmeans_std,
                  color='k',alpha=0.25)
-ax.plot(n10_array,accuracy_dec_mean,c='tab:blue')
+ax.plot(n10_array,accuracy_dec_mean,c='tab:blue',label='DEC')
 ax.fill_between(n10_array, accuracy_dec_mean-accuracy_dec_std, accuracy_dec_mean+accuracy_dec_std,
                  color='tab:blue',alpha=0.25,)
+ax.set_xscale('log')
+ax.set_xlabel("Number of each digit")
+ax.set_ylabel("Accuracy")
+ax.set_title("Cluster label accuracy")
+ax.legend()
