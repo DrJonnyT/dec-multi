@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import adjusted_rand_score
 from shutil import rmtree
+import pytest
 
 
 
@@ -88,6 +89,10 @@ def test_kmeans_mnist_n_times():
     assert df_kmeans_Y.columns[0] == "labels_1"
     
     assert np.array_equal(np.unique(df_kmeans_labels['kmeans_1']),[0,1,2,3,4,5,6,7,8,9])
+    
+    #Test with too many mnist digits
+    with pytest.raises(Exception) as e_info:
+        kmeans_mnist_n_times(6314, 5, 10)
 
 
 
@@ -108,6 +113,9 @@ def test_kmeans_mnist_n_times_csv():
     assert np.array_equal(np.unique(df_kmeans['kmeans_1']),[0,1,2,3,4,5,6,7,8,9])
     assert np.array_equal(df_labels['labels_1'], np.repeat([0,1,2,3,4,5,6,7,8,9],10))
 
+    #Test with too many mnist digits
+    with pytest.raises(Exception) as e_info:
+        kmeans_mnist_n_times_csv(6314, 1, 10,csv_path)
 
 
 def test_dec_mnist_n_times_csv():
@@ -155,6 +163,11 @@ def test_dec_mnist_n_times_csv():
     assert np.array_equal(df_labels['labels_4'], np.repeat([0,1,2,3,4,5,6,7,8,9],10))
 
 
+    #Test with too many mnist digits
+    with pytest.raises(Exception) as e_info:
+        dec_mnist_n_times_csv(6314, 1, 10,csv_path,newcsv=False,
+                        finetune_iters=1000,layerwise_pretrain_iters=500,iter_max=10,
+                        verbose=0)
 
 
 
