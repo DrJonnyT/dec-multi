@@ -5,6 +5,7 @@ from sklearn.cluster import KMeans
 from threadpoolctl import threadpool_limits
 import warnings
 from pathlib import Path
+from os.path import splitext
 
 
 
@@ -154,3 +155,35 @@ def kmeans_mnist_n_times(n10, n_runs, num_clusters):
         
         
     return df_kmeans, df_labels
+
+
+def kmeans_mnist_n_times_csv(n10, n_runs, num_clusters,csv_file):
+    """
+    Run kmeans_mnist_n_times and save the results to a csv file
+
+    Parameters
+    ----------
+    n10 : int
+        The number of each digits to sample
+    n_runs : int
+        The number of times to resample and run kmeans
+    num_clusters : int
+        The number of clusters
+    csv_file : string
+        Path to CSV output file
+
+    Returns
+    -------
+    None.
+
+    """
+    #Work out the path of the labels csv file
+    labels_file = splitext(csv_file)[0] + "_labels" + splitext(csv_file)[1]
+    
+    df_kmeans, df_labels = kmeans_mnist_n_times(n10, n_runs, num_clusters)
+    
+    #Make the directory if needs be and save the files
+    csv_path = Path(csv_file)
+    csv_path.parent.mkdir(parents=True, exist_ok=True)
+    df_kmeans.to_csv(csv_file)
+    df_labels.to_csv(labels_file)
