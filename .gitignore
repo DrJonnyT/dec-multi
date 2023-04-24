@@ -94,8 +94,9 @@ ENV/
 # H5 model files
 *.h5
 
-#Output folder
+#Output folders
 output/
+output_test/
 
 #Temp foler
 temp/
