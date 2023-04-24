@@ -102,3 +102,6 @@ temp/
 
 #pytest log
 pytest_log.txt
+
+#examply.py from original project
+example.py
