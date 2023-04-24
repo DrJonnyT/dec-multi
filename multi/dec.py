@@ -153,7 +153,9 @@ def dec_mnist_n_times_csv(n10, n_runs, num_clusters, csv_file, newcsv=True, **kw
 
     """
     
-    
+    if n10 > 6313:
+            raise Exception("n10 can only be max size of 6313 as there are only 6313 copies of 5 in the mnist data")
+            
     #Sort through kwargs
     if "finetune_iters" in kwargs:
         finetune_iters = kwargs.get("finetune_iters")

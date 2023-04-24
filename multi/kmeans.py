@@ -119,6 +119,9 @@ def kmeans_mnist_n_times(n10, n_runs, num_clusters):
 
     """
     
+    if n10 > 6313:
+        raise Exception("n10 can only be max size of 6313 as there are only 6313 copies of 5 in the mnist data")
+    
     #Get mnist dataset
     X,Y = get_mnist()
     
@@ -136,7 +139,7 @@ def kmeans_mnist_n_times(n10, n_runs, num_clusters):
         # Select 10 instances of each digit (0-9) at random
         for digit in range(10):
             indices = np.where(Y == digit)[0]
-            indices = np.random.choice(indices, size=10, replace=False)
+            indices = np.random.choice(indices, size=n10, replace=False)
             Xsub = np.vstack((Xsub,X[indices]))
             Ysub = np.append(Ysub,Y[indices])
 
@@ -177,6 +180,10 @@ def kmeans_mnist_n_times_csv(n10, n_runs, num_clusters,csv_file):
     None.
 
     """
+    
+    if n10 > 6313:
+            raise Exception("n10 can only be max size of 6313 as there are only 6313 copies of 5 in the mnist data")
+    
     #Work out the path of the labels csv file
     labels_file = splitext(csv_file)[0] + "_labels" + splitext(csv_file)[1]
     
