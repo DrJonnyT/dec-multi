@@ -1,5 +1,5 @@
 from multi.kmeans import kmeans_n_times_csv, kmeans_mnist_n_times
-from multi.dec import dec_n_times_csv
+from multi.dec import dec_n_times_csv, dec_mnist_n_times_csv
 from multi.comparison import mean_rand_index
 
 
@@ -89,10 +89,41 @@ def test_kmeans_mnist_n_times():
     assert np.array_equal(np.unique(df_kmeans_labels['kmeans_1']),[0,1,2,3,4,5,6,7,8,9])
 
 
+def test_dec_mnist_n_times_csv():
+    csv_path = "./temp/dec_mnist.csv"
+    labels_path = "./temp/dec_mnist_labels.csv"
+    df_dec, df_labels = dec_mnist_n_times_csv(10, 2, 10,csv_path,newcsv=True,
+                    finetune_iters=1000,layerwise_pretrain_iters=500,iter_max=10)
+    
+    assert np.shape(df_dec) == (100,2)
+    assert np.shape(df_labels) == (100,2)
+    
+    assert df_dec.index[0] == "sample_0"
+    assert df_dec.columns[0] == "kmeans_1"
+    assert df_labels.columns[0] == "labels_1"
+    
+    assert np.array_equal(np.unique(df_dec['dec_1']),[0,1,2,3,4,5,6,7,8,9])
+    
+    #Check they are the same from the csv
+    df_dec_loaded = pd.read_csv(csv_path,index_col=0)
+    df_labels_loaded = pd.read_csv(labels_path,index_col=0)
+    assert np.array_equal(df_dec.values,df_dec_loaded.values)
+    assert np.array_equal(df_labels.values,df_labels_loaded.values)
+    
+    
+    
+    #Now append to this preexisting csv and test
+    df_dec, df_labels = kmeans_mnist_n_times(10, 1, 10,csv_path,newcsv=False,
+                    finetune_iters=1000,layerwise_pretrain_iters=500,iter_max=10)
+    
+    assert np.shape(df_dec) == (100,3)
+    assert np.shape(df_labels) == (100,3)
 
-
-
-
+    assert df_dec.index[0] == "sample_0"
+    assert df_dec.columns[0] == "kmeans_1"
+    assert df_labels.columns[0] == "labels_1"
+    assert df_dec.columns[-1] == "kmeans_3"
+    assert df_labels.columns[-1] == "labels_3"
 
 
 
