@@ -8,9 +8,9 @@ from mnist.mnist import get_mnist
 
 
 
-def dec_n_times_csv(X,Y, n, num_clusters, csv_file, newcsv=True, **kwargs):
+def dec_n_times_csv(X,Y, n, n_clusters, csv_file, newcsv=True, **kwargs):
     """
-    Run deep embedded clustering `n` times on data `X`, with `num_clusters`
+    Run deep embedded clustering `n` times on data `X`, with `n_clusters`
     clusters, and append the resulting cluster assignments to a CSV file.
     The reason the clustering and file writing are tied into the same function
     is so you still save the data if it crashes halfway through.
@@ -23,7 +23,7 @@ def dec_n_times_csv(X,Y, n, num_clusters, csv_file, newcsv=True, **kwargs):
         The data to be clustered. Each row is a set of data
     n : int
         The number of times to run kmeans
-    num_clusters : int
+    n_clusters : int
         The number of clusters
     csv_file : string
         Path to CSV output file
@@ -90,7 +90,7 @@ def dec_n_times_csv(X,Y, n, num_clusters, csv_file, newcsv=True, **kwargs):
     
     for i in range(n):
         
-        c = DeepEmbeddingClustering(n_clusters=num_clusters,
+        c = DeepEmbeddingClustering(n_clusters=n_clusters,
                                     input_dim=np.shape(X)[1])
         c.initialize(X, finetune_iters=finetune_iters,
                      layerwise_pretrain_iters=layerwise_pretrain_iters,
@@ -107,10 +107,10 @@ def dec_n_times_csv(X,Y, n, num_clusters, csv_file, newcsv=True, **kwargs):
 
 
 
-def dec_mnist_n_times_csv(n10, n_runs, num_clusters, csv_file, newcsv=True, **kwargs):
+def dec_mnist_n_times_csv(n10, n_runs, n_clusters, csv_file, newcsv=True, **kwargs):
     """
     Run deep embedded clustering `n_runs` times on mnist data, with
-    `num_clusters` clusters, and append the resulting cluster assignments to a
+    `n_clusters` clusters, and append the resulting cluster assignments to a
     CSV file. The reason the clustering and file writing are tied into the same
     function is so you still save the data if it crashes halfway through.
     In the saved csv file, each sample is a row and each run of DEC is a
@@ -126,7 +126,7 @@ def dec_mnist_n_times_csv(n10, n_runs, num_clusters, csv_file, newcsv=True, **kw
         The number of times to resample and run deep embedded clustering. Note
         when appending that this is the total number of runs, including any
         that are already in the files.
-    num_clusters : int
+    n_clusters : int
         The number of clusters
     csv_file : string
         Path to CSV output file
@@ -227,7 +227,7 @@ def dec_mnist_n_times_csv(n10, n_runs, num_clusters, csv_file, newcsv=True, **kw
         
         
         #Run deep embedded clustering
-        c = DeepEmbeddingClustering(n_clusters=num_clusters,
+        c = DeepEmbeddingClustering(n_clusters=n_clusters,
                                     input_dim=np.shape(X)[1])
         c.initialize(Xsub, finetune_iters=finetune_iters,
                      layerwise_pretrain_iters=layerwise_pretrain_iters,

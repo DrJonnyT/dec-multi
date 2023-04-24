@@ -10,9 +10,9 @@ from os.path import splitext
 
 
 
-def kmeans_n_times_csv(X, n, num_clusters, csv_file, newcsv=True, **kwargs):
+def kmeans_n_times_csv(X, n, n_clusters, csv_file, newcsv=True, **kwargs):
     """
-    Run k-means clustering `n` times on data `X`, with `num_clusters` clusters,
+    Run k-means clustering `n` times on data `X`, with `n_clusters` clusters,
     and append the resulting cluster assignments to a CSV file `csv_file`.
     The reason the clustering and file writing are tied into the same function
     is so you still save the data if it crashes halfway through, which may
@@ -27,7 +27,7 @@ def kmeans_n_times_csv(X, n, num_clusters, csv_file, newcsv=True, **kwargs):
         The data to be clustered. Each row is a set of data
     n : int
         The number of times to run kmeans
-    num_clusters : int
+    n_clusters : int
         The number of clusters
     csv_file : string
         Path to CSV output file
@@ -77,7 +77,7 @@ def kmeans_n_times_csv(X, n, num_clusters, csv_file, newcsv=True, **kwargs):
             warnings.filterwarnings('ignore')
         
             # Fit the k-means model to the data
-            kmeans = KMeans(n_clusters=num_clusters).fit(X)
+            kmeans = KMeans(n_clusters=n_clusters).fit(X)
 
         #Load the csv, add a column for the kmeans cluster labels, then save
         df_kmeans = pd.read_csv(csv_file,index_col=0)
@@ -88,10 +88,10 @@ def kmeans_n_times_csv(X, n, num_clusters, csv_file, newcsv=True, **kwargs):
     return df_kmeans
 
 
-def kmeans_mnist_n_times(n10, n_runs, num_clusters):
+def kmeans_mnist_n_times(n10, n_runs, n_clusters):
     """
     Run k-means clustering `n_runs` times on mnist digits data, with a random
-    sample of 'n10' of each digit. With `num_clusters` clusters.
+    sample of 'n10' of each digit. With `n_clusters` clusters.
     After, append the resulting cluster assignments to a CSV file `csv_file`.
     The reason the clustering and file writing are tied into the same function
     is so you still save the data if it crashes halfway through, which may
@@ -106,7 +106,7 @@ def kmeans_mnist_n_times(n10, n_runs, num_clusters):
         The number of each digits to sample
     n_runs : int
         The number of times to resample and run kmeans
-    num_clusters : int
+    n_clusters : int
         The number of clusters
         
     Returns
@@ -150,7 +150,7 @@ def kmeans_mnist_n_times(n10, n_runs, num_clusters):
             warnings.filterwarnings('ignore')
         
             # Fit the k-means model to the data
-            kmeans = KMeans(n_clusters=num_clusters).fit(Xsub)
+            kmeans = KMeans(n_clusters=n_clusters).fit(Xsub)
 
         #Append labels to the dataframes
         df_kmeans[f'kmeans_{run+1}'] = kmeans.labels_
@@ -160,7 +160,7 @@ def kmeans_mnist_n_times(n10, n_runs, num_clusters):
     return df_kmeans, df_labels
 
 
-def kmeans_mnist_n_times_csv(n10, n_runs, num_clusters,csv_file):
+def kmeans_mnist_n_times_csv(n10, n_runs, n_clusters,csv_file):
     """
     Run kmeans_mnist_n_times and save the results to a csv file
 
@@ -170,7 +170,7 @@ def kmeans_mnist_n_times_csv(n10, n_runs, num_clusters,csv_file):
         The number of each digits to sample
     n_runs : int
         The number of times to resample and run kmeans
-    num_clusters : int
+    n_clusters : int
         The number of clusters
     csv_file : string
         Path to CSV output file
@@ -187,7 +187,7 @@ def kmeans_mnist_n_times_csv(n10, n_runs, num_clusters,csv_file):
     #Work out the path of the labels csv file
     labels_file = splitext(csv_file)[0] + "_labels" + splitext(csv_file)[1]
     
-    df_kmeans, df_labels = kmeans_mnist_n_times(n10, n_runs, num_clusters)
+    df_kmeans, df_labels = kmeans_mnist_n_times(n10, n_runs, n_clusters)
     
     #Make the directory if needs be and save the files
     csv_path = Path(csv_file)
