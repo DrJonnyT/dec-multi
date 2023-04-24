@@ -3,6 +3,17 @@ import numpy as np
 from random import shuffle
 
 def get_mnist():
+    """
+    Download a copy of the mnist digits data from tensorflow.keras
+
+    Returns
+    -------
+    X : array
+        Array of images.
+    Y : Array
+        Array of labels.
+
+    """
     np.random.seed(1234) # set seed for deterministic ordering
     (x_train, y_train), (x_test, y_test) = mnist.load_data()
     x_all = np.concatenate((x_train, x_test), axis = 0)
