@@ -97,6 +97,8 @@ ENV/
 #Output folders
 output/
 output_test/
+output_no_resample/
+output_resample/
 
 #Temp foler
 temp/
