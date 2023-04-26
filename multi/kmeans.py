@@ -176,7 +176,7 @@ def kmeans_mnist_n_times(n10, n_runs, n_clusters, resample=True):
     return df_kmeans, df_labels
 
 
-def kmeans_mnist_n_times_csv(n10, n_runs, n_clusters,csv_file):
+def kmeans_mnist_n_times_csv(n10, n_runs, n_clusters,csv_file,resample=True):
     """
     Run kmeans_mnist_n_times and save the results to a csv file
 
@@ -190,6 +190,9 @@ def kmeans_mnist_n_times_csv(n10, n_runs, n_clusters,csv_file):
         The number of clusters.
     csv_file : string
         Path to CSV output file.
+    resample: bool, default = True
+        If true then resample from mnist each time, otherwise just run 
+        repeatedly on the sample sample of digits.
 
     Returns
     -------
@@ -203,7 +206,7 @@ def kmeans_mnist_n_times_csv(n10, n_runs, n_clusters,csv_file):
     #Work out the path of the labels csv file
     labels_file = splitext(csv_file)[0] + "_labels" + splitext(csv_file)[1]
     
-    df_kmeans, df_labels = kmeans_mnist_n_times(n10, n_runs, n_clusters)
+    df_kmeans, df_labels = kmeans_mnist_n_times(n10, n_runs, n_clusters,resample=resample)
     
     #Make the directory if needs be and save the files
     csv_path = Path(csv_file)
