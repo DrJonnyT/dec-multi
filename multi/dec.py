@@ -107,7 +107,7 @@ def dec_n_times_csv(X,Y, n, n_clusters, csv_file, newcsv=True, **kwargs):
 
 
 
-def dec_mnist_n_times_csv(n10, n_runs, n_clusters, csv_file, newcsv=True, **kwargs):
+def dec_mnist_n_times_csv(n10, n_runs, n_clusters, csv_file, newcsv=True, resample=True, **kwargs):
     """
     Run deep embedded clustering `n_runs` times on mnist data, with
     `n_clusters` clusters, and append the resulting cluster assignments to a
@@ -133,14 +133,18 @@ def dec_mnist_n_times_csv(n10, n_runs, n_clusters, csv_file, newcsv=True, **kwar
     newcsv : bool, default = True
         If this is true, create a new csv and overwrite any that was there
         before. If false, appends to existing csv if one exists.
+    resample: bool, default = True
+        If true then resample from mnist each time, otherwise just run 
+        repeatedly on the sample sample of digits.
             
     **kwargs: 
         finetune_iters : argument for DeepEmbeddingClustering.initialize
-        (see keras_dec)
+        (see keras_dec).
         layerwise_pretrain_iters : argument for 
-        DeepEmbeddingClustering.initialize (see keras_dec)
-        iter_max : argument for DeepEmbeddingClustering.cluster (see keras_dec)
-        verbose : verbose flag for initialize step
+        DeepEmbeddingClustering.initialize (see keras_dec).
+        iter_max : argument for DeepEmbeddingClustering.cluster (see keras_dec).
+        verbose : verbose flag for initialize step.
+
         
         
     Returns
@@ -173,6 +177,10 @@ def dec_mnist_n_times_csv(n10, n_runs, n_clusters, csv_file, newcsv=True, **kwar
         verbose = kwargs.get("verbose")
     else:
         verbose = "auto"
+    if "resample" in kwargs:
+        resample = kwargs.get("resample")
+    else:
+        resample=True
         
     
     #Get mnist dataset
@@ -197,7 +205,20 @@ def dec_mnist_n_times_csv(n10, n_runs, n_clusters, csv_file, newcsv=True, **kwar
         csv_path.parent.mkdir(parents=True, exist_ok=True)
         df_dec.to_csv(csv_file)
         df_labels.to_csv(labels_file)
+    
         
+    #Select the digits if needs be here
+    if resample==False:
+        #Subsample data
+        #Empty lists for the subsampled data
+        Xsub = np.zeros((0, 784))
+        Ysub = np.zeros(0,dtype='int')
+        # Select 10 instances of each digit (0-9) at random
+        for digit in range(10):
+            indices = np.where(Y == digit)[0]
+            indices = np.random.choice(indices, size=n10, replace=False)
+            Xsub = np.vstack((Xsub,X[indices]))
+            Ysub = np.append(Ysub,Y[indices])
     
     n_runs_completed = 0
     n_runs_loop = 0
@@ -213,17 +234,18 @@ def dec_mnist_n_times_csv(n10, n_runs, n_clusters, csv_file, newcsv=True, **kwar
         #Load the labels csv
         df_labels =  pd.read_csv(labels_file,index_col=0)
         
-        #Subsample data
-        #Empty lists for the subsampled data
-        Xsub = np.zeros((0, 784))
-        Ysub = np.zeros(0,dtype='int')  
-        
-        # Select 10 instances of each digit (0-9) at random
-        for digit in range(10):
-            indices = np.where(Y == digit)[0]
-            indices = np.random.choice(indices, size=n10, replace=False)
-            Xsub = np.vstack((Xsub,X[indices]))
-            Ysub = np.append(Ysub,Y[indices])
+        if resample==True:
+            #Subsample data
+            #Empty lists for the subsampled data
+            Xsub = np.zeros((0, 784))
+            Ysub = np.zeros(0,dtype='int')  
+            
+            # Select 10 instances of each digit (0-9) at random
+            for digit in range(10):
+                indices = np.where(Y == digit)[0]
+                indices = np.random.choice(indices, size=n10, replace=False)
+                Xsub = np.vstack((Xsub,X[indices]))
+                Ysub = np.append(Ysub,Y[indices])
         
         
         #Run deep embedded clustering

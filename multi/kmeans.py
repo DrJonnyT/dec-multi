@@ -88,7 +88,7 @@ def kmeans_n_times_csv(X, n, n_clusters, csv_file, newcsv=True, **kwargs):
     return df_kmeans
 
 
-def kmeans_mnist_n_times(n10, n_runs, n_clusters):
+def kmeans_mnist_n_times(n10, n_runs, n_clusters, resample=True):
     """
     Run k-means clustering `n_runs` times on mnist digits data, with a random
     sample of 'n10' of each digit. With `n_clusters` clusters.
@@ -108,6 +108,9 @@ def kmeans_mnist_n_times(n10, n_runs, n_clusters):
         The number of times to resample and run kmeans.
     n_clusters : int
         The number of clusters.
+    resample: bool, default = True
+        If true then resample from mnist each time, otherwise just run 
+        repeatedly on the sample sample of digits.
         
     Returns
     -------
@@ -129,19 +132,32 @@ def kmeans_mnist_n_times(n10, n_runs, n_clusters):
     df_kmeans = pd.DataFrame(index=[f'sample_{i}' for i in range(n10*10)])
     df_labels = pd.DataFrame(index=[f'sample_{i}' for i in range(n10*10)])
     
-       
-    for run in range(n_runs):
+    #Select the digits if needs be here
+    if resample==False:
+        #Subsample data
         #Empty lists for the subsampled data
         Xsub = np.zeros((0, 784))
-        Ysub = np.zeros(0,dtype='int')  
-        
-        
+        Ysub = np.zeros(0,dtype='int')
         # Select 10 instances of each digit (0-9) at random
         for digit in range(10):
             indices = np.where(Y == digit)[0]
             indices = np.random.choice(indices, size=n10, replace=False)
             Xsub = np.vstack((Xsub,X[indices]))
             Ysub = np.append(Ysub,Y[indices])
+       
+    for run in range(n_runs):
+        if resample==True:
+            #Subsample data
+            #Empty lists for the subsampled data
+            Xsub = np.zeros((0, 784))
+            Ysub = np.zeros(0,dtype='int')  
+            
+            # Select 10 instances of each digit (0-9) at random
+            for digit in range(10):
+                indices = np.where(Y == digit)[0]
+                indices = np.random.choice(indices, size=n10, replace=False)
+                Xsub = np.vstack((Xsub,X[indices]))
+                Ysub = np.append(Ysub,Y[indices])
 
         
         #Control the number of threads in kmeans
