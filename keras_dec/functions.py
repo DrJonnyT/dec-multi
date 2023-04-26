@@ -29,3 +29,34 @@ def linear_assignment(cost_matrix):
     """
     x, y = linear_sum_assignment(cost_matrix)
     return np.array(list(zip(x, y)))
+
+
+def cluster_acc(y_true, y_pred):
+    """
+    Cluster accuracy function from DeepEmbeddedClustering class
+
+    Parameters
+    ----------
+    y_true : numpy array
+        Array of true cluster labels.
+    y_pred : numpy array
+        Array of predicted cluster labels.
+
+    Returns
+    -------
+    accuracy : float
+        Cluster label accuracy.
+    w : numpy array
+        Cost matrix.
+
+    """
+    #Check y_true and y_pred are the same size
+    assert y_pred.size == y_true.size, "y_true and y_pred are not the same size"
+    #Generate the cost matrix
+    D = max(y_pred.max(), y_true.max())+1
+    w = np.zeros((D, D), dtype=np.int64)
+    for i in range(y_pred.size):
+        w[y_pred[i], y_true[i]] += 1
+    ind = linear_assignment(w.max() - w)
+    accuracy = sum([w[i, j] for i, j in ind])*1.0/y_pred.size
+    return accuracy, w
