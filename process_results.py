@@ -3,8 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 #Parameters file
-#import params
-import params.testing as params
+import params.params_no_resample as params
+#import params.testing as params
 
 from mnist.plot import plot_mnist_10x10
 from multi.comparison import mean_rand_index, rand_index_arr, accuracy_arr
