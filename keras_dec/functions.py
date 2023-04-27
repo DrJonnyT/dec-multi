@@ -63,7 +63,7 @@ def cluster_acc(y_true, y_pred):
 
 
 
-def cluster_align(labels1,labels2):
+def align_cluster_labels(labels1,labels2):
     """
     Take two sets of cluster labels and assign them so the nearest equivalents
     use the same labels.    
