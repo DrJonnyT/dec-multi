@@ -9,6 +9,7 @@ import numpy as np
 import tensorflow.keras.backend as K
 from tensorflow.keras.initializers import RandomNormal
 from tensorflow.keras.layers import Dense, Dropout, Input, Layer, InputSpec
+from tensorflow.keras.models import Sequential
 from tensorflow.keras.optimizers import SGD
 from tensorflow.keras.callbacks import LearningRateScheduler
 from sklearn.cluster import KMeans
@@ -242,7 +243,7 @@ class DeepEmbeddingClustering(object):
     def cluster_acc(self, y_true, y_pred):
         #Check y_true and y_pred are the same size
         assert y_pred.size == y_true.size, "y_true and y_pred are not the same size"
-        #Generate the cost matrix
+        #Generate the confusion matrix
         D = max(y_pred.max(), y_true.max())+1
         w = np.zeros((D, D), dtype=np.int64)
         for i in range(y_pred.size):
