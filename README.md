@@ -19,13 +19,15 @@ Folder containing the forked (and modified) backend
 
 
 ## Environment setup
-1. **Install the following packages from conda:**
-   - tensorflow-gpu (2.6.0)
-   * pandas (1.5.2)
-   * pytest (7.1.2)
+1. Use conda to create and activate new environment with most packages:
+```
+conda env create -f environment.yml
+conda activate dec-keras
+```
 
-2. **Install the following packages from pip:**
-   * matplotlib (3.7.1)
-
-These instructions have been tested on Windows 10 native. If you install matplotlib from anaconda it might install ok but fail to run.
+2. Install tensorflow from pip:
+```
+python -m pip install "tensorflow<2.11"
+```
+These instructions have been tested on Windows 10 native.
 
