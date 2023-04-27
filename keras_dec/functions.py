@@ -1,5 +1,6 @@
 from scipy.optimize import linear_sum_assignment
 import numpy as np
+import pandas as pd
 
 def linear_assignment(cost_matrix):
     """
@@ -108,3 +109,25 @@ def align_cluster_labels(labels1,labels2):
     labels2_aligned = np.vectorize(my_dict.get)(labels2)
       
     return labels2_aligned
+
+
+def modal_labels(df_labels):
+    df_modal_labels = df_labels.mode(axis=1)
+    #At this stage we have a dataframe with modal labels for most rows in the
+    #first column. The rest of the columns are nans except when a row has an
+    #unambiguous mode when two or more clusters have the same number of points.
+    #Then it would list all the equally most frequent labels in the columns.
+    #So we need to randomly sample these to get the fairest set of labels.
+    
+    ds_modal_labels = pd.Series(index=df_labels.index,dtype='float')
+    
+    for row in df_modal_labels.index:
+        row_nonans = df_modal_labels.loc[row].dropna()
+        
+        if len(row_nonans) == 1:
+            ds_modal_labels.loc[row] = row_nonans.values
+        else:
+            #Randomly sample a column
+            ds_modal_labels.loc[row] = row_nonans.sample().iloc[0]
+            
+    return ds_modal_labels.values.astype('int')
