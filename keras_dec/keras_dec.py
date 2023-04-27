@@ -9,24 +9,17 @@ import numpy as np
 import tensorflow.keras.backend as K
 from tensorflow.keras.initializers import RandomNormal
 from tensorflow.keras.layers import Dense, Dropout, Input, Layer, InputSpec
-from tensorflow.keras.models import Model, Sequential
 from tensorflow.keras.optimizers import SGD
 from tensorflow.keras.callbacks import LearningRateScheduler
-from sklearn.preprocessing import normalize
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
-
 
 if (sys.version[0] == 2):
     import cPickle as pickle
 else:
     import pickle
-import numpy as np
-
 
 from keras_dec.functions import linear_assignment
-
-
 
 
 class ClusteringLayer(Layer):
