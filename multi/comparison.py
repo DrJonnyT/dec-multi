@@ -2,7 +2,7 @@ import numpy as np
 from sklearn.metrics import adjusted_rand_score
 from itertools import combinations
 
-from keras_dec.keras_dec import DeepEmbeddingClustering
+from keras_dec.functions import cluster_acc
 
 
 def mean_rand_index(df):
@@ -81,6 +81,5 @@ def accuracy_arr(df,labels):
     if df.columns[0] == 'labels':
         df.drop('labels',axis=1,inplace=True)
         
-    c = DeepEmbeddingClustering(n_clusters=10,input_dim=(784))
-    acc_arr = [c.cluster_acc(labels,df[col])[0] for col in df.columns]
+    acc_arr = [cluster_acc(labels,df[col])[0] for col in df.columns]
     return np.array(acc_arr)
