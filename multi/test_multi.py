@@ -1,6 +1,6 @@
 from multi.kmeans import kmeans_n_times_csv, kmeans_mnist_n_times, kmeans_mnist_n_times_csv
 from multi.dec import dec_n_times_csv, dec_mnist_n_times_csv
-from multi.comparison import mean_rand_index
+from multi.comparison import mean_rand_index,rand_index_arr, accuracy_arr
 
 
 import numpy as np
@@ -170,6 +170,31 @@ def test_dec_mnist_n_times_csv():
                         verbose=0)
 
 
+
+
+
+def test_rand_index_arr():
+    df1 = pd.DataFrame()
+    df1['kmeans_1'] = [0,0,1,1,2,2]
+    df1['fgadfg'] = [2,2,1,1,0,0]
+    df1['kmeans3'] = [0,1,1,2,2,0]
+    
+    labels = np.array([0,0,1,1,2,2])
+    
+    rand_arr = rand_index_arr(df1,labels)
+    assert np.array_equal(rand_arr,[1,1,-0.25])
+    
+    
+def test_accuracy_arr():
+    df1 = pd.DataFrame()
+    df1['kmeans_1'] = [0,0,1,1,2,2]
+    df1['fgadfg'] = [2,2,1,1,0,0]
+    df1['kmeans3'] = [0,1,1,2,2,0]
+    
+    labels = np.array([0,0,1,1,2,2])
+    
+    rand_arr = rand_index_arr(df1,labels)
+    assert np.array_equal(rand_arr,[1,1,-0.25])
 
     
 # #After all tests completed, delete the temp directory
