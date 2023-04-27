@@ -8,6 +8,7 @@ import params.params_no_resample as params
 
 from mnist.plot import plot_mnist_10x10
 from multi.comparison import mean_rand_index, rand_index_arr, accuracy_arr
+from keras_dec.functions import align_cluster_labels, cluster_acc, modal_labels
 
 
 #Load settings from params.py file
@@ -19,6 +20,8 @@ n_runs = params.n_runs
 n_clusters = params.n_clusters
 #Output folder
 csv_folder = params.csv_folder
+#Resample flag
+resample=params.resample
 
 
 #Empty arrays for results
@@ -26,6 +29,8 @@ accuracy_kmeans_mean = []
 accuracy_kmeans_std = []
 accuracy_dec_mean = []
 accuracy_dec_std = []
+accuracy_kmeans_avg_labels = []
+accuracy_dec_avg_labels = []
 
 
 for n10 in n10_array:
@@ -45,10 +50,33 @@ for n10 in n10_array:
     accuracy_dec_mean.append(accuracy_dec.mean())
     accuracy_dec_std.append(accuracy_dec.std())
     
+    
+    #Average the cluster labels
+    df_kmeans_aligned = pd.DataFrame(index=df_kmeans.index)
+    df_dec_aligned = pd.DataFrame(index=df_dec.index)
+    for col in df_kmeans.columns:
+        df_kmeans_aligned[col] = align_cluster_labels(df_kmeans_labels.iloc[:,0],df_kmeans[col])
+    for col in df_dec.columns:
+        df_dec_aligned[col] = align_cluster_labels(df_dec_labels.iloc[:,0],df_dec[col])
+
+    #Accuracy of modal labels
+    kmeans_mode_labels = modal_labels(df_kmeans_aligned)
+    dec_mode_labels = modal_labels(df_dec_aligned)
+    kmeans_true_labels = df_kmeans_labels.iloc[:,0]
+    dec_true_labels = df_kmeans_labels.iloc[:,0]
+    
+    accuracy_kmeans_avg_labels.append(cluster_acc(df_kmeans_labels.iloc[:,0], kmeans_mode_labels)[0])
+    accuracy_dec_avg_labels.append(cluster_acc(df_dec_labels.iloc[:,0], dec_mode_labels)[0])
+    
+    
+    
+#Convert to np arrays
 accuracy_kmeans_mean = np.array(accuracy_kmeans_mean)
 accuracy_kmeans_std = np.array(accuracy_kmeans_std)
 accuracy_dec_mean = np.array(accuracy_dec_mean)
 accuracy_dec_std = np.array(accuracy_dec_std)
+accuracy_kmeans_avg_labels = np.array(accuracy_kmeans_avg_labels)
+accuracy_dec_avg_labels = np.array(accuracy_dec_avg_labels)
 
 #Plot results as mean with error bar
 fig,ax = plt.subplots()
@@ -68,3 +96,5 @@ ax.set_xlabel("Number of each digit")
 ax.set_ylabel("Accuracy")
 ax.set_title("Cluster label accuracy")
 ax.legend()
+ax.plot(n10_array,accuracy_kmeans_avg_labels,c='k',label='kmeans avg labels')
+ax.plot(n10_array,accuracy_dec_avg_labels,c='tab:blue',label='DEC avg labels')
