@@ -60,3 +60,51 @@ def cluster_acc(y_true, y_pred):
     ind = linear_assignment(w.max() - w)
     accuracy = sum([w[i, j] for i, j in ind])*1.0/y_pred.size
     return accuracy, w
+
+
+
+def cluster_align(labels1,labels2):
+    """
+    Take two sets of cluster labels and assign them so the nearest equivalents
+    use the same labels.    
+
+    Parameters
+    ----------
+    labels1 : array
+        Array of integer labels.
+    labels2 : array
+        Array of integer labels.
+
+    Returns
+    -------
+    labels2_aligned : numpy array
+        Version of labels2 aligned to have a similar numbering system as labels1.
+
+    """
+    
+    labels1 = np.array(labels1)
+    labels2 = np.array(labels2)
+    labels2_aligned = np.zeros(labels2.shape)
+    
+    
+    #Check y_true and y_pred are the same size
+    assert labels1.size == labels2.size, "labels1 and labels2 are not the same size"
+    
+    #Generate the confusion matrix
+    D = max(labels1.max(), labels2.max())+1
+    cm = np.zeros((D, D), dtype=np.int64)
+    for i in range(labels2.size):
+        cm[labels2[i], labels1[i]] += 1
+        
+    #Work out which labels in labels2 correspond to which labels in labels1
+    ind = linear_assignment(cm.max() - cm)
+    
+    #Make a dictionary to map the input labels2 to the aligned versions
+    my_dict = {}
+    for row in ind:
+        my_dict[row[0]] = row[1]
+    
+    #Map labels2 to the aligned version
+    labels2_aligned = np.vectorize(my_dict.get)(labels2)
+      
+    return labels2_aligned
