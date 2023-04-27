@@ -1,0 +1,13 @@
+name: dec-keras
+channels:
+  - conda-forge 
+  - nodefaults
+dependencies:
+  - python=3.9
+  - pandas
+  - pytest
+  - matplotlib
+  - scikit-learn
+  - scipy
+  - cudatoolkit=11.2
+  - cudnn=8.1.0
