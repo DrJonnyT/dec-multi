@@ -4,5 +4,5 @@
 n10_array = [6,63,631,6313]
 n_runs = 100
 n_clusters = 10
-csv_folder = "./output_no_resample/"
+csv_folder = "./output_no_resample_100/"
 resample=False

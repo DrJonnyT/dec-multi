@@ -17,4 +17,5 @@ resample=params.resample
 
 #Loop through different sized datasets
 for n10 in n10_array:
+    print(f"Running with {n10} of each digit")
     kmeans_mnist_n_times_csv(n10, n_runs, n_clusters,csv_folder+f"kmeans_{n10}.csv",resample=resample)
