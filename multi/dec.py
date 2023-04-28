@@ -121,7 +121,8 @@ def dec_mnist_n_times_csv(n10, n_runs, n_clusters, csv_file, newcsv=True, resamp
     Parameters
     ----------
     n10 : int
-        The number of each digits to sample.
+        The number of each digits to sample. If set to <=0, it will run with
+        the full MNIST dataset and ignore the resample flag.
     n_runs : int
         The number of times to resample and run deep embedded clustering. Note
         when appending that this is the total number of runs, including any
@@ -181,6 +182,8 @@ def dec_mnist_n_times_csv(n10, n_runs, n_clusters, csv_file, newcsv=True, resamp
         resample = kwargs.get("resample")
     else:
         resample=True
+    if n10 <=0: #Flag for doing the full dataset
+        resample=False
         
     
     #Get mnist dataset
@@ -209,16 +212,21 @@ def dec_mnist_n_times_csv(n10, n_runs, n_clusters, csv_file, newcsv=True, resamp
         
     #Select the digits if needs be here
     if resample==False:
-        #Subsample data
-        #Empty lists for the subsampled data
-        Xsub = np.zeros((0, 784))
-        Ysub = np.zeros(0,dtype='int')
-        # Select 10 instances of each digit (0-9) at random
-        for digit in range(10):
-            indices = np.where(Y == digit)[0]
-            indices = np.random.choice(indices, size=n10, replace=False)
-            Xsub = np.vstack((Xsub,X[indices]))
-            Ysub = np.append(Ysub,Y[indices])
+        if n10<=0:
+            #Do not subsample data
+            Xsub = X
+            Ysub = Y
+        else:
+            #Subsample data
+            #Empty lists for the subsampled data
+            Xsub = np.zeros((0, 784))
+            Ysub = np.zeros(0,dtype='int')
+            # Select 10 instances of each digit (0-9) at random
+            for digit in range(10):
+                indices = np.where(Y == digit)[0]
+                indices = np.random.choice(indices, size=n10, replace=False)
+                Xsub = np.vstack((Xsub,X[indices]))
+                Ysub = np.append(Ysub,Y[indices])
     
     n_runs_completed = 0
     n_runs_loop = 0
