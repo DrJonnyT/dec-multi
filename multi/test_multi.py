@@ -168,8 +168,16 @@ def test_dec_mnist_n_times_csv():
         dec_mnist_n_times_csv(6314, 1, 10,csv_path,newcsv=False,
                         finetune_iters=1000,layerwise_pretrain_iters=500,iter_max=10,
                         verbose=0)
-
-
+        
+    #Test with the full mnist dataset
+    dec_mnist_n_times_csv(0, 1, 10,csv_path,newcsv=True,
+                    finetune_iters=1000,layerwise_pretrain_iters=500,iter_max=10,
+                    verbose=0)
+    #Check it made a file with the right number of samples
+    df_dec = pd.read_csv(csv_path,index_col=0)
+    df_labels = pd.read_csv(labels_path,index_col=0)
+    assert df_dec.shape[0] == 70000
+    assert df_labels.shape[0] == 70000
 
 
 
@@ -202,11 +210,11 @@ def test_accuracy_arr():
 #     if os.path.isdir("./temp"):
 #         rmtree("./temp")
         
-def test_tidy():
-    try:
-        rmtree("./temp")
-    except:
-        raise Exception('Failed to delete temp folder in test_multi')
+# def test_tidy():
+#     try:
+#         rmtree("./temp")
+#     except:
+#         raise Exception('Failed to delete temp folder in test_multi')
                      
     
     
