@@ -95,7 +95,7 @@ def dec_n_times_csv(X,Y, n, n_clusters, csv_file, newcsv=True, **kwargs):
         c.initialize(X, finetune_iters=finetune_iters,
                      layerwise_pretrain_iters=layerwise_pretrain_iters,
                      verbose=verbose)
-        c.cluster(X, y=Y,iter_max=iter_max,save_interval=0)
+        c.cluster(X, iter_max=iter_max,save_interval=0)
 
         #Load the csv, add a column for the DEC cluster labels, then save
         df_dec = pd.read_csv(csv_file,index_col=0)
@@ -262,7 +262,7 @@ def dec_mnist_n_times_csv(n10, n_runs, n_clusters, csv_file, newcsv=True, resamp
         c.initialize(Xsub, finetune_iters=finetune_iters,
                      layerwise_pretrain_iters=layerwise_pretrain_iters,
                      verbose=verbose)
-        c.cluster(Xsub, y=Ysub,iter_max=iter_max,save_interval=0)
+        c.cluster(Xsub, iter_max=iter_max,save_interval=0)
 
         #Add a column for the DEC cluster labels, then save
         df_dec[f'dec_{n_runs_completed+1}'] = c.q.argmax(1)
