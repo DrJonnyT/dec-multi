@@ -1,5 +1,61 @@
 from keras_dec.functions import linear_assignment, cluster_acc, align_cluster_labels
+from keras_dec.keras_dec import DeepEmbeddingClustering
+from mnist.mnist import get_mnist, subsample_mnist
+
 import numpy as np
+import tensorflow as tf
+import os
+import random
+
+def test_DeepEmbeddingClustering():
+    #Download and subsample mnist dataset
+    X,Y = get_mnist()
+    
+    #First 10 digits of the mnist dataset
+    X,Y = subsample_mnist(X,Y,10,randomize=False)
+    
+    SEED = 1337
+    
+    os.environ['TF_DETERMINISTIC_OPS'] = '1'
+    os.environ['TF_CUDNN_DETERMINISTIC'] = '1'  # new flag present in tf 2.0+
+    
+    
+    
+    random.seed(SEED)
+    np.random.seed(SEED)
+    tf.random.set_seed(SEED)   
+    
+    tf.config.experimental.enable_op_determinism()
+    
+    #Fix random seed so it gives the same result every time
+    g = tf.Graph()
+    accuracy = []
+    np.random.seed(1337)
+    y_pred = []
+    with g.as_default():
+        tf.random.set_seed(1337)
+        
+        #Run clustering
+        c = DeepEmbeddingClustering(n_clusters=10,
+                                    input_dim=np.shape(X)[1])
+        c.initialize(X, finetune_iters=1000,
+                     layerwise_pretrain_iters=500,
+                     verbose=0)
+        y_pred = c.cluster(X,Y, iter_max=100,save_interval=0)
+        accuracy = c.accuracy[-1]
+
+
+    assert accuracy == 0.58
+    assert cluster_acc(Y,y_pred)[0] == 0.58
+    
+    labels = np.array([4, 4, 1, 5, 9, 5, 8, 9, 7, 0, 2, 8, 1, 1, 1, 9, 9, 4, 1, 7, 5, 5,
+           9, 8, 5, 1, 0, 0, 0, 6, 3, 3, 6, 0, 1, 1, 4, 8, 5, 2, 3, 2, 9, 1,
+           4, 7, 6, 5, 2, 8, 9, 3, 0, 1, 3, 2, 3, 1, 4, 1, 1, 7, 8, 8, 1, 9,
+           1, 4, 2, 1, 0, 9, 0, 7, 1, 4, 8, 0, 4, 8, 7, 4, 2, 0, 4, 1, 4, 8,
+           8, 7, 8, 4, 7, 2, 2, 7, 8, 6, 3, 2], dtype=int)
+    assert np.array_equal(labels,y_pred)
+    
+
 
 def test_linear_assignment():
          
