@@ -6,55 +6,61 @@ import numpy as np
 import tensorflow as tf
 import os
 import random
+from pytest import MonkeyPatch
 
-def test_DeepEmbeddingClustering():
+def test_DeepEmbeddingClustering(monkeypatch):
     #Download and subsample mnist dataset
     X,Y = get_mnist()
     
     #First 10 digits of the mnist dataset
     X,Y = subsample_mnist(X,Y,10,randomize=False)
     
-    SEED = 1337
+    #Need to set random seeds and other settings so it is the same every time
+    #you run the test
+    #This is a useful resource:
+    #https://github.com/NVIDIA/framework-reproducibility/blob/master/doc/d9m/tensorflow_status.md
     
-    os.environ['TF_DETERMINISTIC_OPS'] = '1'
-    os.environ['TF_CUDNN_DETERMINISTIC'] = '1'  # new flag present in tf 2.0+
+    #MonkeyPatch is a way of temporarily setting os.environ variables
+    with MonkeyPatch.context() as mp:
     
-    
-    
-    random.seed(SEED)
-    np.random.seed(SEED)
-    tf.random.set_seed(SEED)   
-    
-    tf.config.experimental.enable_op_determinism()
-    
-    #Fix random seed so it gives the same result every time
-    g = tf.Graph()
-    accuracy = []
-    np.random.seed(1337)
-    y_pred = []
-    with g.as_default():
-        tf.random.set_seed(1337)
+        #Required random fixing
+        SEED = 1337
+        mp.setenv('TF_DETERMINISTIC_OPS','1')
+        #Equivalent:
+        #os.environ['TF_DETERMINISTIC_OPS'] = '1'
+        random.seed(SEED)
+        np.random.seed(SEED)
+        tf.random.set_seed(SEED)
         
-        #Run clustering
-        c = DeepEmbeddingClustering(n_clusters=10,
-                                    input_dim=np.shape(X)[1])
-        c.initialize(X, finetune_iters=1000,
-                     layerwise_pretrain_iters=500,
-                     verbose=0)
-        y_pred = c.cluster(X,Y, iter_max=100,save_interval=0)
-        accuracy = c.accuracy[-1]
-
-
+        #Not required(?)
+        #os.environ['TF_CUDNN_DETERMINISTIC'] = '1'  # new flag present in tf 2.0+
+        #tf.config.experimental.enable_op_determinism()    
+        
+        g = tf.Graph()    
+        with g.as_default():
+            tf.random.set_seed(SEED)
+            
+            #Run clustering
+            c = DeepEmbeddingClustering(n_clusters=10,
+                                        input_dim=np.shape(X)[1])
+            c.initialize(X, finetune_iters=1000,
+                          layerwise_pretrain_iters=500,
+                          verbose=0)
+            y_pred = c.cluster(X,Y, iter_max=100,save_interval=0)
+            accuracy = c.accuracy[-1]
+        
+        
+    #Test that output is as expected
     assert accuracy == 0.58
     assert cluster_acc(Y,y_pred)[0] == 0.58
     
     labels = np.array([4, 4, 1, 5, 9, 5, 8, 9, 7, 0, 2, 8, 1, 1, 1, 9, 9, 4, 1, 7, 5, 5,
-           9, 8, 5, 1, 0, 0, 0, 6, 3, 3, 6, 0, 1, 1, 4, 8, 5, 2, 3, 2, 9, 1,
-           4, 7, 6, 5, 2, 8, 9, 3, 0, 1, 3, 2, 3, 1, 4, 1, 1, 7, 8, 8, 1, 9,
-           1, 4, 2, 1, 0, 9, 0, 7, 1, 4, 8, 0, 4, 8, 7, 4, 2, 0, 4, 1, 4, 8,
-           8, 7, 8, 4, 7, 2, 2, 7, 8, 6, 3, 2], dtype=int)
+            9, 8, 5, 1, 0, 0, 0, 6, 3, 3, 6, 0, 1, 1, 4, 8, 5, 2, 3, 2, 9, 1,
+            4, 7, 6, 5, 2, 8, 9, 3, 0, 1, 3, 2, 3, 1, 4, 1, 1, 7, 8, 8, 1, 9,
+            1, 4, 2, 1, 0, 9, 0, 7, 1, 4, 8, 0, 4, 8, 7, 4, 2, 0, 4, 1, 4, 8,
+            8, 7, 8, 4, 7, 2, 2, 7, 8, 6, 3, 2], dtype=int)
     assert np.array_equal(labels,y_pred)
-    
+
 
 
 def test_linear_assignment():
