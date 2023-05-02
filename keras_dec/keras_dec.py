@@ -365,4 +365,4 @@ class DeepEmbeddingClustering(object):
 
             iteration += 1
             sys.stdout.flush()
-        return
+        return y_pred
