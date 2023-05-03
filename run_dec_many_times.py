@@ -24,4 +24,4 @@ for n10 in n10_array:
         csv_file = csv_folder + f"dec_{n10}.csv"
         dec_mnist_n_times_csv(n10, n_runs, n_clusters,csv_file,newcsv=False,
                     iter_max=100,
-                    finetune_iters=10000,layerwise_pretrain_iters=5000,resample=resample,fail_tolerance=100)
+                    finetune_iters=10000,layerwise_pretrain_iters=5000,resample=resample,fail_tolerance=1000)
