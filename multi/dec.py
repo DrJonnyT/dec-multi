@@ -88,19 +88,36 @@ def dec_n_times_csv(X,Y, n, n_clusters, csv_file, newcsv=True, **kwargs):
         df_dec.to_csv(csv_file)
     
     
-    for i in range(n):
-        
-        c = DeepEmbeddingClustering(n_clusters=n_clusters,
-                                    input_dim=np.shape(X)[1])
-        c.initialize(X, finetune_iters=finetune_iters,
-                     layerwise_pretrain_iters=layerwise_pretrain_iters,
-                     verbose=verbose)
-        c.cluster(X, iter_max=iter_max,save_interval=0)
-
-        #Load the csv, add a column for the DEC cluster labels, then save
+    counter = 0
+    while counter < 10000:
+        print(f"dec_n_times_csv Counter = {counter}")
+        #Load the csv
         df_dec = pd.read_csv(csv_file,index_col=0)
-        df_dec[f'dec_{i+1}'] = c.q.argmax(1)
-        df_dec.to_csv(csv_file)
+        i = df_dec.shape[1]-1 #The number of times DEC has been run in the file
+        print(f"dec_n_times_csv i = {i}")
+        if i >n:
+            break
+        
+        try:
+            c = DeepEmbeddingClustering(n_clusters=n_clusters,
+                                        input_dim=np.shape(X)[1])
+            c.initialize(X, finetune_iters=finetune_iters,
+                         layerwise_pretrain_iters=layerwise_pretrain_iters,
+                         verbose=verbose)
+            c.cluster(X, iter_max=iter_max,save_interval=0)
+
+            #Add a column for the DEC cluster labels, then save    
+            df_dec[f'dec_{i+1}'] = c.q.argmax(1)
+            df_dec.to_csv(csv_file)
+            counter = counter + 1
+        except:
+            counter = counter + 1
+        
+        
+        
+    #for i in range(n):
+        
+        
         
 
     return df_dec
