@@ -111,15 +111,8 @@ def dec_n_times_csv(X,Y, n, n_clusters, csv_file, newcsv=True, **kwargs):
             df_dec.to_csv(csv_file)
             counter = counter + 1
         except:
-            counter = counter + 1
+            counter = counter + 1       
         
-        
-        
-    #for i in range(n):
-        
-        
-        
-
     return df_dec
 
 
@@ -162,6 +155,8 @@ def dec_mnist_n_times_csv(n10, n_runs, n_clusters, csv_file, newcsv=True, resamp
         DeepEmbeddingClustering.initialize (see keras_dec).
         iter_max : argument for DeepEmbeddingClustering.cluster (see keras_dec).
         verbose : verbose flag for initialize step.
+        fail_tolerance : int, number of fails of DEC allowed before stopping 
+        (Default is 1).
 
         
         
@@ -201,6 +196,10 @@ def dec_mnist_n_times_csv(n10, n_runs, n_clusters, csv_file, newcsv=True, resamp
         resample=True
     if n10 <=0: #Flag for doing the full dataset
         resample=False
+    if "fail_tolerance" in kwargs:
+        fail_tolerance = kwargs.get("fail_tolerance")
+    else:
+        fail_tolerance = 1
         
     
     #Get mnist dataset
@@ -245,9 +244,12 @@ def dec_mnist_n_times_csv(n10, n_runs, n_clusters, csv_file, newcsv=True, resamp
                 Xsub = np.vstack((Xsub,X[indices]))
                 Ysub = np.append(Ysub,Y[indices])
     
+    
+    #Main while loop running through DEC
     n_runs_completed = 0
-    n_runs_loop = 0
-    while n_runs_completed < n_runs:
+    counter = 0
+    num_fails = 0
+    while counter < 10000:
         #Load the csv file and see how many runs have been completed so far
         df_dec = pd.read_csv(csv_file,index_col=0)
         n_runs_completed = df_dec.shape[1]
@@ -272,29 +274,34 @@ def dec_mnist_n_times_csv(n10, n_runs, n_clusters, csv_file, newcsv=True, resamp
                 Xsub = np.vstack((Xsub,X[indices]))
                 Ysub = np.append(Ysub,Y[indices])
         
+        try:
+            #Run deep embedded clustering
+            c = DeepEmbeddingClustering(n_clusters=n_clusters,
+                                        input_dim=np.shape(X)[1])
+            c.initialize(Xsub, finetune_iters=finetune_iters,
+                         layerwise_pretrain_iters=layerwise_pretrain_iters,
+                         verbose=verbose)
+            c.cluster(Xsub, iter_max=iter_max,save_interval=0)
+    
+            #Add a column for the DEC cluster labels, then save
+            df_dec[f'dec_{n_runs_completed+1}'] = c.q.argmax(1)
+            df_dec.to_csv(csv_file)
+            
+            #Also save labels
+            df_labels[f'labels_{n_runs_completed+1}'] = Ysub
+            df_labels.to_csv(labels_file)
+            
+            n_runs_completed = n_runs_completed + 1
+        except:
+            num_fails = num_fails + 1
         
-        #Run deep embedded clustering
-        c = DeepEmbeddingClustering(n_clusters=n_clusters,
-                                    input_dim=np.shape(X)[1])
-        c.initialize(Xsub, finetune_iters=finetune_iters,
-                     layerwise_pretrain_iters=layerwise_pretrain_iters,
-                     verbose=verbose)
-        c.cluster(Xsub, iter_max=iter_max,save_interval=0)
-
-        #Add a column for the DEC cluster labels, then save
-        df_dec[f'dec_{n_runs_completed+1}'] = c.q.argmax(1)
-        df_dec.to_csv(csv_file)
+        if num_fails > fail_tolerance:
+            raise Exception("dec_mnist_n_times_csv has failed too many ({num_fails}) times")
         
-        #Also save labels
-        df_labels[f'labels_{n_runs_completed+1}'] = Ysub
-        df_labels.to_csv(labels_file)
         
-        n_runs_completed = n_runs_completed + 1
+        counter = counter + 1
         
-        #Catch in case you get stuck in an infinite loop
-        n_runs_loop = n_runs_loop + 1
-        if n_runs_loop > 1000:
-            raise Exception("dec_mnist_n_times_csv stuck has run too many ({n_runs_loop}) times")
+            
         
         
 
