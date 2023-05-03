@@ -206,16 +206,16 @@ def test_accuracy_arr():
     assert np.array_equal(rand_arr,[1,1,-0.25])
 
     
-# #After all tests completed, delete the temp directory
-# def pytest_sessionfinish(session, exitstatus):
-#     if os.path.isdir("./temp"):
-#         rmtree("./temp")
+#After all tests completed, delete the temp directory
+def pytest_sessionfinish(session, exitstatus):
+    if os.path.isdir("./temp"):
+        rmtree("./temp")
         
-# def test_tidy():
-#     try:
-#         rmtree("./temp")
-#     except:
-#         raise Exception('Failed to delete temp folder in test_multi')
+def test_tidy():
+    try:
+        rmtree("./temp")
+    except:
+        raise Exception('Failed to delete temp folder in test_multi')
                      
     
     
