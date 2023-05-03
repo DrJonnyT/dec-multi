@@ -60,6 +60,7 @@ def test_dec_n_times_csv():
     assert df_dec_loaded.index[0] == "sample_0"
     assert df_dec_loaded.columns[0] == "labels"
     assert df_dec_loaded.columns[1] == "dec_1"
+    assert df_dec_loaded.shape == (6,3)
     
     
     
