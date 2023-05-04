@@ -296,7 +296,9 @@ def dec_mnist_n_times_csv(n10, n_runs, n_clusters, csv_file, newcsv=True, resamp
             num_fails = num_fails + 1
         
         if num_fails > fail_tolerance:
-            raise Exception("dec_mnist_n_times_csv has failed too many ({num_fails}) times")
+            raise Exception(""""VRAM run out: dec_mnist_n_times_csv has failed
+                            too many ({num_fails}) times, the system has
+                            probably run out of VRAM""")
         
         
         counter = counter + 1

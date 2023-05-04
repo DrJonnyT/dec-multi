@@ -123,9 +123,13 @@ def test_kmeans_mnist_n_times_csv():
 def test_dec_mnist_n_times_csv():
     csv_path = "./temp/dec_mnist.csv"
     labels_path = "./temp/dec_mnist_labels.csv"
-    df_dec, df_labels = dec_mnist_n_times_csv(10, 2, 10,csv_path,newcsv=True,
-                    finetune_iters=1000,layerwise_pretrain_iters=500,iter_max=10,
-                    verbose=0)
+    
+    try:
+        df_dec, df_labels = dec_mnist_n_times_csv(10, 2, 10,csv_path,newcsv=True,
+                        finetune_iters=1000,layerwise_pretrain_iters=500,iter_max=10,
+                        verbose=0)
+    except:
+        raise Exception("The system has probably run out of VRAM") 
     
     assert np.shape(df_dec) == (100,2)
     assert np.shape(df_labels) == (100,2)
@@ -180,6 +184,7 @@ def test_dec_mnist_n_times_csv():
     df_labels = pd.read_csv(labels_path,index_col=0)
     assert df_dec.shape[0] == 70000
     assert df_labels.shape[0] == 70000
+
 
 
 
