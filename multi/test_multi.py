@@ -8,6 +8,7 @@ import pandas as pd
 from sklearn.metrics import adjusted_rand_score
 from shutil import rmtree
 import pytest
+import os
 
 
 
