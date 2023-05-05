@@ -28,7 +28,7 @@ def test_DeepEmbeddingClustering(monkeypatch):
     with MonkeyPatch.context() as mp:
     
         #Required random fixing
-        SEED = 1337
+        SEED = 1234
         mp.setenv('TF_DETERMINISTIC_OPS','1')
         
         #Equivalent:
