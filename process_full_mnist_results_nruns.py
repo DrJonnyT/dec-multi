@@ -17,12 +17,16 @@ from keras_dec.functions import align_cluster_labels, cluster_acc, modal_labels
 
 
 #Load csv
-csv_path = params.csv_folder + "dec_0.csv"
-labels_path = params.csv_folder + "dec_0_labels.csv"
+# csv_path = params.csv_folder + "dec_0.csv"
+# labels_path = params.csv_folder + "dec_0_labels.csv"
 
 #6313 of each digit
-# csv_path = "./output_no_resample_100/dec_6313.csv"
-# labels_path = "./output_no_resample_100/dec_6313_labels.csv"
+csv_path = "./output_no_resample_100/dec_6313.csv"
+labels_path = "./output_no_resample_100/dec_6313_labels.csv"
+
+#Redoing 613 of each digit
+csv_path = "./output_no_resample_again/dec_631.csv"
+labels_path = "./output_no_resample_again/dec_631_labels.csv"
 
 
 
@@ -38,7 +42,8 @@ df_dec_aligned = pd.DataFrame(index=df_dec.index)
 with warnings.catch_warnings():
     warnings.simplefilter(action='ignore', category=Warning)
     for col in df_dec.columns:
-        df_dec_aligned[col] = align_cluster_labels(df_dec.iloc[:,0],df_dec[col])    
+        df_dec_aligned[col] = align_cluster_labels(labels,df_dec[col])    
+        #df_dec_aligned[col] = align_cluster_labels(df_dec.iloc[:,0],df_dec[col])    
 
 
 #Mode accruacy

@@ -4,5 +4,5 @@
 n10_array = [0]
 n_runs = 200
 n_clusters = 10
-csv_folder = "./output_full_mnist_100/"
+csv_folder = "./output_full_mnist_def_100/"
 resample=False
