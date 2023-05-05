@@ -11,13 +11,13 @@ from multi.dec import dec_mnist_n_times_csv
 #Run Deep embedded clustering lots of times and save the results to csv files
 #Load settings from params.py file
 #An array of the number of copies of each digit to use
-n_digits_array = [6130]
+n_digits_array = [10000]
 #The number of times to run kmeans
-n_runs = 2
+n_runs = 100
 #Number of clusters
 n_clusters = 10
 #Output folder
-output_folder = "./output_random_sample/"
+output_folder = "./output_balanced/"
 
 #Copy this file and params file into the output folder
 os.makedirs(os.path.dirname(output_folder), exist_ok=True)
@@ -32,4 +32,4 @@ for n_digits in n_digits_array:
         #             fail_tolerance=10000)
         dec_mnist_n_times_csv(n_digits, n_runs, n_clusters,csv_file,newcsv=False,
                     iter_max=100,
-                    finetune_iters=1000,layerwise_pretrain_iters=500,resample=False,fail_tolerance=1000)
+                    finetune_iters=1000,layerwise_pretrain_iters=500,resample=False,fail_tolerance=1000,balanced=True)
