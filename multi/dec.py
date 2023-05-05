@@ -117,7 +117,7 @@ def dec_n_times_csv(X,Y, n, n_clusters, csv_file, newcsv=True, **kwargs):
 
 
 
-def dec_mnist_n_times_csv(n10, n_runs, n_clusters, csv_file, newcsv=True, resample=True, **kwargs):
+def dec_mnist_n_times_csv(n_digits, n_runs, n_clusters, csv_file, newcsv=True, **kwargs):
     """
     Run deep embedded clustering `n_runs` times on mnist data, with
     `n_clusters` clusters, and append the resulting cluster assignments to a
@@ -130,8 +130,8 @@ def dec_mnist_n_times_csv(n10, n_runs, n_clusters, csv_file, newcsv=True, resamp
     
     Parameters
     ----------
-    n10 : int
-        The number of each digits to sample. If set to <=0, it will run with
+    n_digits : int
+        The number of digits to sample. If set to <=0, it will run with
         the full MNIST dataset and ignore the resample flag.
     n_runs : int
         The number of times to resample and run deep embedded clustering. Note
@@ -144,9 +144,6 @@ def dec_mnist_n_times_csv(n10, n_runs, n_clusters, csv_file, newcsv=True, resamp
     newcsv : bool, default = True
         If this is true, create a new csv and overwrite any that was there
         before. If false, appends to existing csv if one exists.
-    resample: bool, default = True
-        If true then resample from mnist each time, otherwise just run 
-        repeatedly on the sample sample of digits.
             
     **kwargs: 
         finetune_iters : argument for DeepEmbeddingClustering.initialize
@@ -157,6 +154,8 @@ def dec_mnist_n_times_csv(n10, n_runs, n_clusters, csv_file, newcsv=True, resamp
         verbose : verbose flag for initialize step.
         fail_tolerance : int, number of fails of DEC allowed before stopping 
         (Default is 1).
+        balanced : Take a balanced sample of n_digits/10 copies of each 
+        each digit, rather than a fully random sample. Default: False
 
         
         
@@ -169,10 +168,7 @@ def dec_mnist_n_times_csv(n10, n_runs, n_clusters, csv_file, newcsv=True, resamp
         Dataframe of the relevant labels from the mnist dataset.
 
     """
-    
-    if n10 > 6313:
-            raise Exception("n10 can only be max size of 6313 as there are only 6313 copies of 5 in the mnist data")
-            
+                
     #Sort through kwargs
     if "finetune_iters" in kwargs:
         finetune_iters = kwargs.get("finetune_iters")
@@ -193,21 +189,39 @@ def dec_mnist_n_times_csv(n10, n_runs, n_clusters, csv_file, newcsv=True, resamp
     if "resample" in kwargs:
         resample = kwargs.get("resample")
     else:
-        resample=True
-    if n10 <=0: #Flag for doing the full dataset
+        resample=False
+    if n_digits <=0: #Flag for doing the full dataset
         resample=False
     if "fail_tolerance" in kwargs:
         fail_tolerance = kwargs.get("fail_tolerance")
     else:
         fail_tolerance = 1
+    if "balanced" in kwargs:
+        balanced = kwargs.get("balanced")
+    else:
+        balanced = False
+       
+    #Cannot resample if picking digits at random
+    if balanced is True:
+        resample = False
         
+    #Check if there are enough digits in mnist dataset
+    if n_digits > 63130 and balanced is True:
+        raise Exception("""n_digits can only be max size of 63130 if balanced
+                        is True as there are only 6313 copies of 5 in the mnist
+                        data""")
+    elif n_digits > 70000:
+        raise Exception(""""n_digits can only be max size of 70000 as there are
+                        only 70000 digits in the mnist data""")
+    
+    
     
     #Get mnist dataset
     X,Y = get_mnist()
     
     #Make empty dataframes
-    df_dec = pd.DataFrame(index=[f'sample_{i}' for i in range(n10*10)])
-    df_labels = pd.DataFrame(index=[f'sample_{i}' for i in range(n10*10)])
+    df_dec = pd.DataFrame(index=[f'sample_{i}' for i in range(n_digits)])
+    df_labels = pd.DataFrame(index=[f'sample_{i}' for i in range(n_digits)])
       
     
     #Check if file exists- if not it needs creating
@@ -224,11 +238,15 @@ def dec_mnist_n_times_csv(n10, n_runs, n_clusters, csv_file, newcsv=True, resamp
         csv_path.parent.mkdir(parents=True, exist_ok=True)
         df_dec.to_csv(csv_file)
         df_labels.to_csv(labels_file)
+        
+    #The number of each digit to sample if using a balanced dataset
+    if balanced is True:
+        n10 = int(n_digits/10)
     
         
     #Select the digits if needs be here
     if resample==False:
-        if n10<=0:
+        if n_digits<=0 or n_digits==70000:
             #Do not subsample data
             Xsub = X
             Ysub = Y
@@ -237,12 +255,19 @@ def dec_mnist_n_times_csv(n10, n_runs, n_clusters, csv_file, newcsv=True, resamp
             #Empty lists for the subsampled data
             Xsub = np.zeros((0, 784))
             Ysub = np.zeros(0,dtype='int')
-            # Select 10 instances of each digit (0-9) at random
-            for digit in range(10):
-                indices = np.where(Y == digit)[0]
-                indices = np.random.choice(indices, size=n10, replace=False)
-                Xsub = np.vstack((Xsub,X[indices]))
-                Ysub = np.append(Ysub,Y[indices])
+            
+            if balanced is True:
+                # Select 10 instances of each digit (0-9) at random
+                for digit in range(10):
+                    indices = np.where(Y == digit)[0]
+                    indices = np.random.choice(indices, size=n10, replace=False)
+                    Xsub = np.vstack((Xsub,X[indices]))
+                    Ysub = np.append(Ysub,Y[indices])
+            else:
+                #Select n_digits at random
+                indices = np.random.randint(0,len(X),n_digits)
+                Xsub = X[indices]
+                Ysub = Y[indices]
     
     
     #Main while loop running through DEC
@@ -262,17 +287,23 @@ def dec_mnist_n_times_csv(n10, n_runs, n_clusters, csv_file, newcsv=True, resamp
         df_labels =  pd.read_csv(labels_file,index_col=0)
         
         if resample==True:
-            #Subsample data
-            #Empty lists for the subsampled data
-            Xsub = np.zeros((0, 784))
-            Ysub = np.zeros(0,dtype='int')  
-            
-            # Select 10 instances of each digit (0-9) at random
-            for digit in range(10):
-                indices = np.where(Y == digit)[0]
-                indices = np.random.choice(indices, size=n10, replace=False)
-                Xsub = np.vstack((Xsub,X[indices]))
-                Ysub = np.append(Ysub,Y[indices])
+             #Subsample data
+             #Empty lists for the subsampled data
+             Xsub = np.zeros((0, 784))
+             Ysub = np.zeros(0,dtype='int')
+             
+             if balanced is True:
+                 # Select 10 instances of each digit (0-9) at random
+                 for digit in range(10):
+                     indices = np.where(Y == digit)[0]
+                     indices = np.random.choice(indices, size=n10, replace=False)
+                     Xsub = np.vstack((Xsub,X[indices]))
+                     Ysub = np.append(Ysub,Y[indices])
+             else:
+                 #Select n_digits at random
+                 indices = np.random.randint(0,len(X),n_digits)
+                 Xsub = X[indices]
+                 Ysub = Y[indices]
         
         try:
             #Run deep embedded clustering

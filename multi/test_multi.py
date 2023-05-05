@@ -9,6 +9,7 @@ from sklearn.metrics import adjusted_rand_score
 from shutil import rmtree
 import pytest
 import os
+import tensorflow as tf
 
 
 
@@ -124,12 +125,12 @@ def test_dec_mnist_n_times_csv():
     csv_path = "./temp/dec_mnist.csv"
     labels_path = "./temp/dec_mnist_labels.csv"
     
-    try:
-        df_dec, df_labels = dec_mnist_n_times_csv(10, 2, 10,csv_path,newcsv=True,
-                        finetune_iters=1000,layerwise_pretrain_iters=500,iter_max=10,
-                        verbose=0)
-    except:
-        raise Exception("The system has probably run out of VRAM") 
+    #try:
+    df_dec, df_labels = dec_mnist_n_times_csv(100, 2, 10,csv_path,newcsv=True,
+                    finetune_iters=1000,layerwise_pretrain_iters=500,iter_max=10,
+                    verbose=0)
+    # except:
+    #     raise Exception("The system has probably run out of VRAM") 
     
     assert np.shape(df_dec) == (100,2)
     assert np.shape(df_labels) == (100,2)
@@ -139,8 +140,8 @@ def test_dec_mnist_n_times_csv():
     assert df_labels.columns[0] == "labels_1"
     
     assert np.array_equal(np.unique(df_dec['dec_1']), [0,1,2,3,4,5,6,7,8,9])
-    assert np.array_equal(df_labels['labels_1'], np.repeat([0,1,2,3,4,5,6,7,8,9],10))
-    
+    #Check it's not 10 of each digit in a row (what you would get from balanced)
+    assert not np.array_equal(df_labels['labels_1'], np.repeat([0,1,2,3,4,5,6,7,8,9],10))
     
     #Check they are the same from the csv
     df_dec_loaded = pd.read_csv(csv_path,index_col=0)
@@ -152,9 +153,10 @@ def test_dec_mnist_n_times_csv():
     
     #Now append another 2 runs to this preexisting csv and test
     #2 + 2 = 4 runs in total
-    df_dec, df_labels = dec_mnist_n_times_csv(10, 4, 10,csv_path,newcsv=False,
+    #These 2 extra runs are balanced, so 10 of each digit
+    df_dec, df_labels = dec_mnist_n_times_csv(100, 4, 10,csv_path,newcsv=False,
                     finetune_iters=1000,layerwise_pretrain_iters=500,iter_max=10,
-                    verbose=0)
+                    verbose=0,balanced=True)
     
     assert np.shape(df_dec) == (100,4)
     assert np.shape(df_labels) == (100,4)
@@ -166,16 +168,29 @@ def test_dec_mnist_n_times_csv():
     assert df_labels.columns[-1] == "labels_4"
 
     assert np.array_equal(np.unique(df_dec['dec_4']), [0,1,2,3,4,5,6,7,8,9])
+    #10 of each digit
     assert np.array_equal(df_labels['labels_4'], np.repeat([0,1,2,3,4,5,6,7,8,9],10))
 
 
     #Test with too many mnist digits
     with pytest.raises(Exception) as e_info:
-        dec_mnist_n_times_csv(6314, 1, 10,csv_path,newcsv=False,
+        dec_mnist_n_times_csv(63140, 1, 10,csv_path,newcsv=False,
                         finetune_iters=1000,layerwise_pretrain_iters=500,iter_max=10,
-                        verbose=0)
+                        verbose=0,balanced=True)
+    with pytest.raises(Exception) as e_info:
+        dec_mnist_n_times_csv(1e6, 1, 10,csv_path,newcsv=False,
+                        finetune_iters=1000,layerwise_pretrain_iters=500,iter_max=10,
+                        verbose=0,balanced=False)
         
+
+#Same as test_dec_mnist_n_times_csv but with full mnist dataset
+#Will fail if you don't have enough VRAM
+def test_dec_mnist_n_times_csv_full():
+    csv_path = "./temp/dec_mnist.csv"
+    labels_path = "./temp/dec_mnist_labels.csv"
+
     #Test with the full mnist dataset
+    tf.get_logger().setLevel('FATAL')
     dec_mnist_n_times_csv(0, 1, 10,csv_path,newcsv=True,
                     finetune_iters=1000,layerwise_pretrain_iters=500,iter_max=10,
                     verbose=0)
