@@ -20,13 +20,24 @@ from keras_dec.functions import align_cluster_labels, cluster_acc, modal_labels
 # csv_path = params.csv_folder + "dec_0.csv"
 # labels_path = params.csv_folder + "dec_0_labels.csv"
 
-#6313 of each digit
-csv_path = "./output_no_resample_100/dec_6313.csv"
-labels_path = "./output_no_resample_100/dec_6313_labels.csv"
+# #6313 of each digit
+# csv_path = "./output_no_resample_100/dec_6313.csv"
+# labels_path = "./output_no_resample_100/dec_6313_labels.csv"
 
-#Redoing 613 of each digit
-csv_path = "./output_no_resample_again/dec_631.csv"
-labels_path = "./output_no_resample_again/dec_631_labels.csv"
+# #Redoing 613 of each digit
+# csv_path = "./output_no_resample_again/dec_631.csv"
+# labels_path = "./output_no_resample_again/dec_631_labels.csv"
+
+
+#10000 randomly sampled (ie unbalanced) digits
+csv_path = "./output_balanced/dec_10000.csv"
+labels_path = "./output_balanced/dec_10000_labels.csv"
+
+
+# #Old resampled data
+# csv_path = "./output_resample/kmeans_6313.csv"
+# labels_path = "./output_resample/kmeans_6313_labels.csv"
+
 
 
 
