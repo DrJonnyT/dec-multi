@@ -1,3 +1,9 @@
+#Set tensorflow gpu memory to be able to grow, which makes it less likely to crash
+import tensorflow as tf
+physical_devices = tf.config.experimental.list_physical_devices('GPU')
+tf.config.experimental.set_memory_growth(physical_devices[0], True)
+
+
 from multi.kmeans import kmeans_n_times_csv, kmeans_mnist_n_times, kmeans_mnist_n_times_csv
 from multi.dec import dec_n_times_csv, dec_mnist_n_times_csv
 from multi.comparison import mean_rand_index,rand_index_arr, accuracy_arr
@@ -126,7 +132,7 @@ def test_dec_mnist_n_times_csv():
     labels_path = "./temp/dec_mnist_labels.csv"
     
     #try:
-    df_dec, df_labels = dec_mnist_n_times_csv(100, 2, 10,csv_path,newcsv=True,
+    df_dec, df_labels = dec_mnist_n_times_csv(100, 2, 10,csv_path,overwrite=True,
                     finetune_iters=1000,layerwise_pretrain_iters=500,iter_max=10,
                     verbose=0)
     # except:
@@ -154,7 +160,7 @@ def test_dec_mnist_n_times_csv():
     #Now append another 2 runs to this preexisting csv and test
     #2 + 2 = 4 runs in total
     #These 2 extra runs are balanced, so 10 of each digit
-    df_dec, df_labels = dec_mnist_n_times_csv(100, 4, 10,csv_path,newcsv=False,
+    df_dec, df_labels = dec_mnist_n_times_csv(100, 4, 10,csv_path,overwrite=False,
                     finetune_iters=1000,layerwise_pretrain_iters=500,iter_max=10,
                     verbose=0,balanced=True)
     
@@ -186,12 +192,12 @@ def test_dec_mnist_n_times_csv():
 #Same as test_dec_mnist_n_times_csv but with full mnist dataset
 #Will fail if you don't have enough VRAM
 def test_dec_mnist_n_times_csv_full():
-    csv_path = "./temp/dec_mnist.csv"
-    labels_path = "./temp/dec_mnist_labels.csv"
+    csv_path = "./temp/dec_mnist_full.csv"
+    labels_path = "./temp/dec_mnist_full_labels.csv"
 
     #Test with the full mnist dataset
     tf.get_logger().setLevel('FATAL')
-    dec_mnist_n_times_csv(0, 1, 10,csv_path,newcsv=True,
+    dec_mnist_n_times_csv(0, 1, 10,csv_path,overwrite=True,
                     finetune_iters=1000,layerwise_pretrain_iters=500,iter_max=10,
                     verbose=0)
     #Check it made a file with the right number of samples

@@ -117,7 +117,7 @@ def dec_n_times_csv(X,Y, n, n_clusters, csv_file, newcsv=True, **kwargs):
 
 
 
-def dec_mnist_n_times_csv(n_digits, n_runs, n_clusters, csv_file, newcsv=True, **kwargs):
+def dec_mnist_n_times_csv(n_digits, n_runs, n_clusters, csv_file, overwrite=False, **kwargs):
     """
     Run deep embedded clustering `n_runs` times on mnist data, with
     `n_clusters` clusters, and append the resulting cluster assignments to a
@@ -141,9 +141,9 @@ def dec_mnist_n_times_csv(n_digits, n_runs, n_clusters, csv_file, newcsv=True, *
         The number of clusters.
     csv_file : string
         Path to CSV output file.
-    newcsv : bool, default = True
-        If this is true, create a new csv and overwrite any that was there
-        before. If false, appends to existing csv if one exists.
+    overwrite : bool, default = False
+        Overwrite any file that was there before. If false, appends to existing
+        csv if one exists.
             
     **kwargs: 
         finetune_iters : argument for DeepEmbeddingClustering.initialize
@@ -228,14 +228,17 @@ def dec_mnist_n_times_csv(n_digits, n_runs, n_clusters, csv_file, newcsv=True, *
     #Note that newcsv can also be true from the input arguments
     csv_path = Path(csv_file)
     if csv_path.exists() is False:
-        newcsv = True
+        #If file doesn't exists, make a new file ('overwrite' an empty space)
+        overwrite = True
     
     #Work out the path of the labels csv file
     labels_file = splitext(csv_file)[0] + "_labels" + splitext(csv_file)[1]
     
-    if newcsv:
-        #Make a new csv. Make the directory first.
-        csv_path.parent.mkdir(parents=True, exist_ok=True)
+    #Prepare the output files
+    #Make sure the parent directory exists
+    csv_path.parent.mkdir(parents=True, exist_ok=True)
+    if overwrite:
+        #Make new CSVs for output.
         df_dec.to_csv(csv_file)
         df_labels.to_csv(labels_file)
         
