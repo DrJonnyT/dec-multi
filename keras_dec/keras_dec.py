@@ -199,7 +199,7 @@ class DeepEmbeddingClustering(object):
                     encoder_model = Sequential([dense_layer])
                     encoder_model.compile(loss='mse', optimizer=SGD(learning_rate=self.learning_rate, decay=0, momentum=0.9))
                     current_input = encoder_model.predict(current_input,verbose=verbose)
-
+                #This is the bit where it fails if you run out of VRAM
                 autoencoder.fit(current_input, current_input, 
                                 batch_size=self.batch_size, epochs=layerwise_epochs, callbacks=[lr_schedule], verbose=verbose)
                 self.autoencoder.layers[i].set_weights(autoencoder.layers[1].get_weights())
