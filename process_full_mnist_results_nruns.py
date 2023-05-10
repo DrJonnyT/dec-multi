@@ -29,9 +29,14 @@ from keras_dec.functions import align_cluster_labels, cluster_acc, modal_labels
 # labels_path = "./output_no_resample_again/dec_631_labels.csv"
 
 
-#10000 randomly sampled (ie unbalanced) digits
-csv_path = "./output_balanced/dec_10000.csv"
-labels_path = "./output_balanced/dec_10000_labels.csv"
+# #10000 randomly sampled (ie unbalanced) digits
+# csv_path = "./output_balanced/dec_10000.csv"
+# labels_path = "./output_balanced/dec_10000_labels.csv"
+
+
+#Not resampled, new code
+csv_path = "./output_unbalanced_1000_500/dec_250.csv"
+labels_path = "./output_unbalanced_1000_500/dec_250_labels.csv"
 
 
 # #Old resampled data
@@ -43,6 +48,14 @@ labels_path = "./output_balanced/dec_10000_labels.csv"
 
 df_dec = pd.read_csv(csv_path,index_col=0)
 df_labels = pd.read_csv(labels_path,index_col=0)
+
+
+#Select only first 25 columns
+# df_dec = df_dec.iloc[:,0:25]
+# df_labels = df_labels.iloc[:,0:25]
+
+
+
 #All label columns are the same
 labels = df_labels['labels_1']
 
