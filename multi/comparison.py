@@ -119,7 +119,7 @@ def prob_lab_agg(df_labels,norm=False):
     n_samples = np.shape(df_labels)[0]
     
     #Construct the Z matrix based on equations (2) and (3) above
-    Z = np.zeros([n_samples,n_samples])
+    Z = np.empty([n_samples,n_samples],dtype='float32')
     
     #Loop through each sample
     for sample_i in range(n_samples):
