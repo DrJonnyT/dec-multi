@@ -37,5 +37,5 @@ def test_accuracy_arr():
     
     labels = np.array([0,0,1,1,2,2])
     
-    rand_arr = rand_index_arr(df1,labels)
-    assert np.array_equal(rand_arr,[1,1,-0.25])
+    acc_arr = accuracy_arr(df1,labels)
+    assert np.array_equal(acc_arr,[1,1,0.5])
