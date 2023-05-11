@@ -150,7 +150,8 @@ def prob_lab_agg(df_labels,norm=False):
     #you use test data with the same labels each time
     #model = NMF(n_components=10, init='random', beta_loss='kullback-leibler',solver='mu')  
     #More stable settings that get the right result with test data
-    model = NMF(n_components=10, init='nndsvd', beta_loss='frobenius')  
+    n_components = len(np.unique(df_labels))
+    model = NMF(n_components=n_components, init='nndsvd', beta_loss='frobenius')  
     
     W = model.fit_transform(Z)
     H = model.components_
