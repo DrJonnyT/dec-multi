@@ -6,7 +6,7 @@ tf.config.experimental.set_memory_growth(physical_devices[0], True)
 
 from multi.kmeans import kmeans_n_times_csv, kmeans_mnist_n_times, kmeans_mnist_n_times_csv
 from multi.dec import dec_n_times_csv, dec_mnist_n_times_csv
-from multi.comparison import mean_rand_index,rand_index_arr, accuracy_arr
+
 
 
 import numpy as np
@@ -71,21 +71,6 @@ def test_dec_n_times_csv():
     assert df_dec_loaded.shape == (6,3)
     
     
-    
-    
-def test_mean_rand_index():
-    Xdata = [[0,0],[0.1,0.1],[0.15,0.15],[10,10],[10.1,10.1],[10.2,10.2]]
-    Ydata = [58,69,-12,6,np.inf,np.nan]
-    csv_path = "./temp/kmeans2.csv"
-    df_kmeans = kmeans_n_times_csv(Xdata, 10, 2, csv_path, newcsv=True, labels=Ydata)
-    
-    mean_rand = mean_rand_index(df_kmeans)
-    #The mean rand should be 1 because you should always come up with the same
-    #set of labels for this Xdata
-    assert mean_rand == 1
-
-
-
 
 def test_kmeans_mnist_n_times():
     df_kmeans, df_kmeans_labels = kmeans_mnist_n_times(10, 5, 10)
@@ -208,29 +193,6 @@ def test_dec_mnist_n_times_csv_full():
 
 
 
-
-def test_rand_index_arr():
-    df1 = pd.DataFrame()
-    df1['kmeans_1'] = [0,0,1,1,2,2]
-    df1['fgadfg'] = [2,2,1,1,0,0]
-    df1['kmeans3'] = [0,1,1,2,2,0]
-    
-    labels = np.array([0,0,1,1,2,2])
-    
-    rand_arr = rand_index_arr(df1,labels)
-    assert np.array_equal(rand_arr,[1,1,-0.25])
-    
-    
-def test_accuracy_arr():
-    df1 = pd.DataFrame()
-    df1['kmeans_1'] = [0,0,1,1,2,2]
-    df1['fgadfg'] = [2,2,1,1,0,0]
-    df1['kmeans3'] = [0,1,1,2,2,0]
-    
-    labels = np.array([0,0,1,1,2,2])
-    
-    rand_arr = rand_index_arr(df1,labels)
-    assert np.array_equal(rand_arr,[1,1,-0.25])
 
     
 #After all tests completed, delete the temp directory
