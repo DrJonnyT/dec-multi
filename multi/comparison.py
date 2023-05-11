@@ -87,7 +87,7 @@ def accuracy_arr(df,labels):
 
 
 
-def prob_lab_agg(df_labels,norm=True):
+def prob_lab_agg(df_labels,norm=False):
     """
     Probabalistic label aggregation function
     Based on the paper by Lange & Buhmann 2005, DOI:10.1145/1081870.1081890
@@ -103,8 +103,11 @@ def prob_lab_agg(df_labels,norm=True):
     df_labels : Pandas DataFrame
         Dataframe of cluster labels. Each row is a sample and each column a set
         of labels.
-    norm : TYPE, optional
-        DESCRIPTION. The default is True.
+    norm : Bool or string, optional
+        Choose whether or not to normalise the Z matrix. The default is False.
+        If False, do not normalise it before doing NMF on it.
+        If True, divide by the number of samples.
+        If 'p_i', divide by p_i (equation (6) in the paper above).
 
     Returns
     -------
@@ -114,7 +117,8 @@ def prob_lab_agg(df_labels,norm=True):
     """
     
     n_samples = np.shape(df_labels)[0]
-    n_runs = np.shape(df_labels)[1]
+    
+    #Construct the Z matrix based on equations (2) and (3) above
     Z = np.zeros([n_samples,n_samples])
     
     #Loop through each sample
@@ -129,19 +133,30 @@ def prob_lab_agg(df_labels,norm=True):
         
         Z[sample_i] = zarr_sample_i
     
-    if norm:
+    #We now have the Z matrix, the number of times each sample appears with
+    #The same cluster label
+    
+    #Normalise if required
+    if norm is True:
+        n_runs = np.shape(df_labels)[1]
+        Z = Z / n_runs
+    elif norm == 'p_i':
         p_i = np.sum(Z,axis=0) / np.sum(Z)
         Z = Z / p_i
-        #Z = Z / n_runs
+        
     
     #Now run NMF
+    #Settings more like what the paper talks about, but give wrong result if
+    #you use test data with the same labels each time
     #model = NMF(n_components=10, init='random', beta_loss='kullback-leibler',solver='mu')  
+    #More stable settings that get the right result with test data
     model = NMF(n_components=10, init='nndsvd', beta_loss='frobenius')  
     
-
     W = model.fit_transform(Z)
     H = model.components_
     #H_labels = np.argmax(H,axis=0)
     #W_labels = np.argmax(W,axis=1)
+    #This seems like a reasonble thing to do as they are roughly symmetric
+    #Ideally you would set H = W.T to be fully symmetric
     HW_labels = np.argmax(H*W.T,axis=0)
     return HW_labels
