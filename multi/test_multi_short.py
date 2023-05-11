@@ -46,7 +46,12 @@ def test_prob_lab_agg():
     df_labels = pd.DataFrame()
     df_labels['labels_1'] = [0,0,0,1,1,1]
     df_labels['labels_2'] = [1,1,1,0,0,0]
+    labels_pla = prob_lab_agg(df_labels)
+    assert cluster_acc(labels_pla,df_labels['labels_1'])[0] == 1
     
+    #Add in some more labels
+    df_labels['labels_3'] = [0,0,0,1,1,1]
+    df_labels['labels_4'] = [1,0,0,1,0,0]
     labels_pla = prob_lab_agg(df_labels)
     assert cluster_acc(labels_pla,df_labels['labels_1'])[0] == 1
     
