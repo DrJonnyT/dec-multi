@@ -1,5 +1,6 @@
 import numpy as np
 from sklearn.metrics import adjusted_rand_score
+from sklearn.decomposition import NMF
 from itertools import combinations
 
 from keras_dec.functions import cluster_acc
@@ -83,3 +84,64 @@ def accuracy_arr(df,labels):
         
     acc_arr = [cluster_acc(labels,df[col])[0] for col in df.columns]
     return np.array(acc_arr)
+
+
+
+def prob_lab_agg(df_labels,norm=True):
+    """
+    Probabalistic label aggregation function
+    Based on the paper by Lange & Buhmann 2005, DOI:10.1145/1081870.1081890
+    Available at:
+    https://www.researchgate.net/publication/221654189_Combining_partitions_by_probabilistic_label_aggregation
+    
+    Take a dataframe where each column is a set of cluster labels. Aggregate
+    these sets together based on consideration of 'what are the chances that 
+    sample i and sample j have the same cluster label?'
+    
+    Parameters
+    ----------
+    df_labels : Pandas DataFrame
+        Dataframe of cluster labels. Each row is a sample and each column a set
+        of labels.
+    norm : TYPE, optional
+        DESCRIPTION. The default is True.
+
+    Returns
+    -------
+    HW_labels : numpy array
+        Aggregated cluster labels.
+
+    """
+    
+    n_samples = np.shape(df_labels)[0]
+    n_runs = np.shape(df_labels)[1]
+    Z = np.zeros([n_samples,n_samples])
+    
+    #Loop through each sample
+    for sample_i in range(n_samples):
+        #Work out the number of times that other samples are in the same cluster
+        zarr_sample_i = np.zeros(n_samples)
+        
+        #Loop through all runs
+        for run in df_labels.columns:
+            #Get an array that's 1 if they are the same and 0 if different, and add
+            zarr_sample_i = zarr_sample_i + (df_labels[run]==df_labels[run].iloc[sample_i]).astype(int)
+        
+        Z[sample_i] = zarr_sample_i
+    
+    if norm:
+        p_i = np.sum(Z,axis=0) / np.sum(Z)
+        Z = Z / p_i
+        #Z = Z / n_runs
+    
+    #Now run NMF
+    #model = NMF(n_components=10, init='random', beta_loss='kullback-leibler',solver='mu')  
+    model = NMF(n_components=10, init='nndsvd', beta_loss='frobenius')  
+    
+
+    W = model.fit_transform(Z)
+    H = model.components_
+    #H_labels = np.argmax(H,axis=0)
+    #W_labels = np.argmax(W,axis=1)
+    HW_labels = np.argmax(H*W.T,axis=0)
+    return HW_labels
