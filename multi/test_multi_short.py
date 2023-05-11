@@ -1,4 +1,5 @@
-from multi.comparison import mean_rand_index,rand_index_arr, accuracy_arr
+from multi.comparison import mean_rand_index,rand_index_arr, accuracy_arr, prob_lab_agg
+from keras_dec.functions import cluster_acc
 from multi.kmeans import kmeans_n_times_csv
 
 import numpy as np
@@ -39,3 +40,14 @@ def test_accuracy_arr():
     
     acc_arr = accuracy_arr(df1,labels)
     assert np.array_equal(acc_arr,[1,1,0.5])
+    
+    
+def test_prob_lab_agg():
+    df_labels = pd.DataFrame()
+    df_labels['labels_1'] = [0,0,0,1,1,1]
+    df_labels['labels_2'] = [1,1,1,0,0,0]
+    
+    labels_pla = prob_lab_agg(df_labels)
+    assert cluster_acc(labels_pla,df_labels['labels_1'])[0] == 1
+    
+    
