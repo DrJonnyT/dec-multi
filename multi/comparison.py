@@ -2,6 +2,7 @@ import numpy as np
 from sklearn.metrics import adjusted_rand_score
 from sklearn.decomposition import NMF
 from itertools import combinations
+import scipy.sparse as sps
 
 from keras_dec.functions import cluster_acc
 
@@ -119,7 +120,8 @@ def prob_lab_agg(df_labels,norm=False):
     n_samples = np.shape(df_labels)[0]
     
     #Construct the Z matrix based on equations (2) and (3) above
-    Z = np.empty([n_samples,n_samples],dtype='float32')
+    #Scipy sparse matrix as memory usage could be very high with numpy
+    Z = sps.lil_matrix((n_samples,n_samples),dtype='int32')
     
     #Loop through each sample
     for sample_i in range(n_samples):
@@ -134,7 +136,7 @@ def prob_lab_agg(df_labels,norm=False):
         Z[sample_i] = zarr_sample_i
     
     #We now have the Z matrix, the number of times each sample appears with
-    #The same cluster label
+    #the same cluster label
     
     #Normalise if required
     if norm is True:
@@ -143,7 +145,9 @@ def prob_lab_agg(df_labels,norm=False):
     elif norm == 'p_i':
         p_i = np.sum(Z,axis=0) / np.sum(Z)
         Z = Z / p_i
-        
+    
+    #Convert to csr matrix for faster NMF
+    Z = Z.tocsr()
     
     #Now run NMF
     #Settings more like what the paper talks about, but give wrong result if
@@ -157,6 +161,7 @@ def prob_lab_agg(df_labels,norm=False):
     H = model.components_
     #H_labels = np.argmax(H,axis=0)
     #W_labels = np.argmax(W,axis=1)
+    
     #This seems like a reasonble thing to do as they are roughly symmetric
     #Ideally you would set H = W.T to be fully symmetric
     HW_labels = np.argmax(H*W.T,axis=0)
