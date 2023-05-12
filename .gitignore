@@ -105,3 +105,6 @@ pytest_log.txt
 
 #examply.py from original project
 example.py
+
+#Bash stackdump if there's an error on windows
+bash.exe.stackdump
