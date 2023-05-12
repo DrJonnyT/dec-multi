@@ -117,24 +117,59 @@ def prob_lab_agg(df_labels,norm=False):
 
     """
     
-    n_samples = np.shape(df_labels)[0]
+    n_samples, n_runs = np.shape(df_labels)
+    
     
     #Construct the Z matrix based on equations (2) and (3) above
     #Scipy sparse matrix as memory usage could be very high with numpy
     Z = sps.lil_matrix((n_samples,n_samples),dtype='int32')
     
+    
+    
+    df_labels_np = df_labels.to_numpy()
+    
+    import pdb
     #Loop through each sample
     for sample_i in range(n_samples):
         #Work out the number of times that other samples are in the same cluster
         zarr_sample_i = np.zeros(n_samples)
-        
         #Loop through all runs
-        for run in df_labels.columns:
+        for run in range(n_runs):
+            
             #Get an array that's 1 if they are the same and 0 if different, and add
-            zarr_sample_i = zarr_sample_i + (df_labels[run]==df_labels[run].iloc[sample_i]).astype(int)
+            #zarr_sample_i = zarr_sample_i + (df_labels[run]==df_labels[run].iloc[sample_i]).astype(int)
+            
+            zarr_sample_i = zarr_sample_i + (df_labels_np[:,run] == df_labels_np[sample_i,run]).astype(int)
+            
+            
         
         Z[sample_i] = zarr_sample_i
+    # pdb.set_trace()
     
+    
+    # Z2 = sps.lil_matrix((n_samples,n_samples),dtype='int32')
+    
+   
+    
+    # #run is like i in the Z matrix in the paper
+    # for run in range(n_runs):
+    #     labels_thisrun = df_labels_np[:,run]
+    #     #The index of Z_thisrun is j from the Z matrix in the paper
+    #     Z_thisrun = np.zeros(n_samples)
+    #     for sample in range(n_samples):
+
+    #         a = np.where(labels_thisrun == labels_thisrun[sample])[0]
+    #         b = labels_thisrun == labels_thisrun[sample]
+    #         Z_thisrun[a] += 1
+            
+    #     Z2[run] = Z_thisrun
+    
+    # for i in range(n_samples):
+    #     for j in range(n_samples):
+    #         for run in np.arange(n_runs):
+    #             a = df_labels_np[:,run] == df_labels_np[:,j]
+    
+    #pdb.set_trace()
     #We now have the Z matrix, the number of times each sample appears with
     #the same cluster label
     
@@ -146,8 +181,8 @@ def prob_lab_agg(df_labels,norm=False):
         p_i = np.sum(Z,axis=0) / np.sum(Z)
         Z = Z / p_i
     
-    #Convert to csr matrix for faster NMF
-    Z = Z.tocsr()
+    #Convert to csr matrix for (orders of magnitude!) faster NMF
+    Z = Z.tocsc()
     
     #Now run NMF
     #Settings more like what the paper talks about, but give wrong result if
