@@ -119,57 +119,29 @@ def prob_lab_agg(df_labels,norm=False):
     
     n_samples, n_runs = np.shape(df_labels)
     
-    
-    #Construct the Z matrix based on equations (2) and (3) above
-    #Scipy sparse matrix as memory usage could be very high with numpy
-    Z = sps.lil_matrix((n_samples,n_samples),dtype='int32')
-    
-    
-    
+    #convert to numpy to make it much faster
     df_labels_np = df_labels.to_numpy()
     
-    import pdb
+    #Construct the Z matrix based on equations (2) and (3) above
+    """Idea to make it even faster: use np.where to get a list of indices that
+    you would then add 1 to each time. Difficult to make it work with a sparse
+    matrix though as you can't just add to it"""
+    
+    #Scipy sparse matrix as memory usage could be very high with numpy
+    Z = sps.lil_matrix((n_samples,n_samples),dtype='int32') 
+    
     #Loop through each sample
     for sample_i in range(n_samples):
         #Work out the number of times that other samples are in the same cluster
         zarr_sample_i = np.zeros(n_samples)
         #Loop through all runs
         for run in range(n_runs):
-            
             #Get an array that's 1 if they are the same and 0 if different, and add
-            #zarr_sample_i = zarr_sample_i + (df_labels[run]==df_labels[run].iloc[sample_i]).astype(int)
-            
             zarr_sample_i = zarr_sample_i + (df_labels_np[:,run] == df_labels_np[sample_i,run]).astype(int)
             
-            
-        
         Z[sample_i] = zarr_sample_i
-    # pdb.set_trace()
-    
-    
-    # Z2 = sps.lil_matrix((n_samples,n_samples),dtype='int32')
-    
    
     
-    # #run is like i in the Z matrix in the paper
-    # for run in range(n_runs):
-    #     labels_thisrun = df_labels_np[:,run]
-    #     #The index of Z_thisrun is j from the Z matrix in the paper
-    #     Z_thisrun = np.zeros(n_samples)
-    #     for sample in range(n_samples):
-
-    #         a = np.where(labels_thisrun == labels_thisrun[sample])[0]
-    #         b = labels_thisrun == labels_thisrun[sample]
-    #         Z_thisrun[a] += 1
-            
-    #     Z2[run] = Z_thisrun
-    
-    # for i in range(n_samples):
-    #     for j in range(n_samples):
-    #         for run in np.arange(n_runs):
-    #             a = df_labels_np[:,run] == df_labels_np[:,j]
-    
-    #pdb.set_trace()
     #We now have the Z matrix, the number of times each sample appears with
     #the same cluster label
     
@@ -197,7 +169,7 @@ def prob_lab_agg(df_labels,norm=False):
     #H_labels = np.argmax(H,axis=0)
     #W_labels = np.argmax(W,axis=1)
     
-    #This seems like a reasonble thing to do as they are roughly symmetric
+    #This seems like a reasonble thing to output as they are roughly symmetric
     #Ideally you would set H = W.T to be fully symmetric
     HW_labels = np.argmax(H*W.T,axis=0)
     return HW_labels
