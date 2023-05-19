@@ -71,3 +71,67 @@ def subsample_mnist(X,Y,n10,randomize=False):
                 
         
     return Xsub, Ysub
+
+
+
+def subsample_digits(X,Y,n_digits=100,balanced=False):
+    """
+    Subsample MNIST digits. A more advanced version of subsample_mnist, capable
+    of balanced (equal numbers of each digit) and unbalanced sampling.
+
+    Parameters
+    ----------
+    X : array
+        Data to be subsampled (probably MNIST images).
+    Y : array
+        Labels to be subsampled (probably MNIST labels).
+    resample : TYPE, optional
+        DESCRIPTION. The default is False.
+    n_digits : int, optional
+        The number of digits to sample. If set to <=0, it will run with the
+        full MNIST dataset and ignore the resample flag. The default is 100.
+    balanced : TYPE, optional
+        Take a balanced sample of n_digits/10 copies of each digit, rather than
+        a fully random sample. The default is False.
+    n10 : TYPE, optional
+        DESCRIPTION. The default is 10.
+
+    Returns
+    -------
+    Xsub : array
+        Subsampled version of X
+    Ysub : array
+        Subsampled version of Y
+
+    """
+    
+    #The number of each digit to sample if using a balanced dataset
+    if balanced is True:
+        n10 = int(n_digits/10)
+    
+    
+    #Select the digits
+    if n_digits<=0 or n_digits==70000:
+        #Do not subsample data
+        Xsub = X
+        Ysub = Y
+    else:
+        #Subsample data
+        #Empty lists for the subsampled data
+        Xsub = np.zeros((0, 784))
+        Ysub = np.zeros(0,dtype='int')
+        
+        if balanced is True:
+            # Select 10 instances of each digit (0-9) at random
+            for digit in range(10):
+                indices = np.where(Y == digit)[0]
+                indices = np.random.choice(indices, size=n10, replace=False)
+                Xsub = np.vstack((Xsub,X[indices]))
+                Ysub = np.append(Ysub,Y[indices])
+        else:
+            #Select n_digits at random
+            indices = np.random.randint(0,len(X),n_digits)
+            Xsub = X[indices]
+            Ysub = Y[indices]
+            
+    return Xsub, Ysub
