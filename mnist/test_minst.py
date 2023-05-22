@@ -36,18 +36,26 @@ def test_subsample_digits():
     X,Y = get_mnist()
     
     #First do 100 digits, balanced
-    Xsub, Ysub = subsample_digits(X,Y,balanced=True)
+    Xsub, Ysub, indices = subsample_digits(X,Y,balanced=True)
     assert len(Xsub) == 100
     assert len(Ysub) == 100
+    assert len(indices) == 100
+    assert np.array_equal(Xsub, X[indices])
+    assert np.array_equal(Ysub, Y[indices])
     
     #Now 10000 unbalanced
-    Xsub, Ysub = subsample_digits(X,Y,n_digits=10000)
+    Xsub, Ysub, indices = subsample_digits(X,Y,n_digits=10000)
     assert len(Xsub) == 10000
     assert len(Ysub) == 10000
+    assert len(indices) == 10000
+    assert np.array_equal(Xsub, X[indices])
+    assert np.array_equal(Ysub, Y[indices])
+    
     #Check you dont have balanced numbers of each digit
     assert np.array_equal( np.histogram(Ysub) , np.tile(10,10)) is False
     
     #Now all the digits
-    Xsub, Ysub = subsample_digits(X,Y,n_digits=0)
+    Xsub, Ysub, indices = subsample_digits(X,Y,n_digits=0)
     assert len(Ysub) == 70000
+    assert np.array_equal(np.arange(0,70000,1),indices)
     

@@ -102,6 +102,8 @@ def subsample_digits(X,Y,n_digits=100,balanced=False):
         Subsampled version of X
     Ysub : array
         Subsampled version of Y
+    indices : array
+        Indices of the subsampled data before they were subsampled
 
     """
     
@@ -109,29 +111,29 @@ def subsample_digits(X,Y,n_digits=100,balanced=False):
     if balanced is True:
         n10 = int(n_digits/10)
     
-    
-    #Select the digits
+    #Select the digits to output
     if n_digits<=0 or n_digits==70000:
-        #Do not subsample data
-        Xsub = X
-        Ysub = Y
+        #Use every digit
+        indices = np.arange(0,70000,1)
     else:
         #Subsample data
         #Empty lists for the subsampled data
         Xsub = np.zeros((0, 784))
         Ysub = np.zeros(0,dtype='int')
+        indices = np.zeros(0,dtype='int')
         
         if balanced is True:
             # Select 10 instances of each digit (0-9) at random
             for digit in range(10):
-                indices = np.where(Y == digit)[0]
-                indices = np.random.choice(indices, size=n10, replace=False)
-                Xsub = np.vstack((Xsub,X[indices]))
-                Ysub = np.append(Ysub,Y[indices])
+                indices_digit = np.where(Y == digit)[0]
+                indices_digit = np.random.choice(indices_digit, size=n10, replace=False)
+                indices = np.append(indices,indices_digit)
         else:
             #Select n_digits at random
             indices = np.random.randint(0,len(X),n_digits)
-            Xsub = X[indices]
-            Ysub = Y[indices]
+    
+    #Subsample the data
+    Xsub = X[indices]
+    Ysub = Y[indices]
             
-    return Xsub, Ysub
+    return Xsub, Ysub, indices
