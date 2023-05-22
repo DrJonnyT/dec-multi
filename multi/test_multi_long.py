@@ -92,25 +92,51 @@ def test_kmeans_mnist_n_times():
 
 
 def test_kmeans_mnist_n_times_csv():
-    csv_path = "./temp/kmeans3.csv"
-    kmeans_mnist_n_times_csv(10, 5, 10,csv_path)
+    csv_path = "./temp/kmeans_mnist.csv"
+    labels_path = "./temp/kmeans_mnist_labels.csv"
+    indices_path = "./temp/kmeans_mnist_indices.csv"
+    df_kmeans,df_labels,df_indices = kmeans_mnist_n_times_csv(100, 3, 10,csv_path,overwrite=True)
     
-    df_kmeans = pd.read_csv(csv_path,index_col=0)
-    df_labels = pd.read_csv("./temp/kmeans3_labels.csv",index_col=0)
+    assert np.shape(df_kmeans) == (100,3)
+    assert np.shape(df_labels) == (100,3)
+    assert np.shape(df_indices) == (100,3)
     
-    assert np.shape(df_kmeans) == (100,5)
-    assert np.shape(df_labels) == (100,5)
+    #Load from files just created
+    df_kmeans_loaded = pd.read_csv(csv_path,index_col=0)
+    df_labels_loaded = pd.read_csv(labels_path,index_col=0)
+    df_indices_loaded = pd.read_csv(indices_path,index_col=0)
     
-    assert df_kmeans.index[0] == "sample_0"
-    assert df_kmeans.columns[0] == "kmeans_1"
-    assert df_labels.columns[0] == "labels_1"
+    assert np.shape(df_kmeans_loaded) == (100,3)
+    assert np.shape(df_labels_loaded) == (100,3)
+    assert np.shape(df_indices_loaded) == (100,3)  
+        
+    assert df_kmeans_loaded.index[0] == "sample_0"
+    assert df_kmeans_loaded.columns[0] == "kmeans_1"
+    assert df_labels_loaded.columns[0] == "labels_1"
     
+    #Make sure labels are not balanced
+    assert not np.array_equal(df_labels['labels_1'], np.repeat([0,1,2,3,4,5,6,7,8,9],10))
+    
+    df_kmeans,df_labels,df_indices = kmeans_mnist_n_times_csv(100, 3, 10,csv_path,balanced=True,overwrite=True)
     assert np.array_equal(np.unique(df_kmeans['kmeans_1']),[0,1,2,3,4,5,6,7,8,9])
     assert np.array_equal(df_labels['labels_1'], np.repeat([0,1,2,3,4,5,6,7,8,9],10))
 
+    #Now add on another run
+    df_kmeans,df_labels,df_indices = kmeans_mnist_n_times_csv(100, 4, 10,csv_path,balanced=True,overwrite=False)
+    assert np.shape(df_kmeans) == (100,4)
+    assert np.shape(df_labels) == (100,4)
+    assert np.shape(df_indices) == (100,4)
+    
+    df_kmeans_loaded = pd.read_csv(csv_path,index_col=0)
+    df_labels_loaded = pd.read_csv(labels_path,index_col=0)
+    df_indices_loaded = pd.read_csv(indices_path,index_col=0)
+    assert np.shape(df_kmeans_loaded) == (100,4)
+    assert np.shape(df_labels_loaded) == (100,4)
+    assert np.shape(df_indices_loaded) == (100,4)
+
     #Test with too many mnist digits
     with pytest.raises(Exception) as e_info:
-        kmeans_mnist_n_times_csv(6314, 1, 10,csv_path)
+        kmeans_mnist_n_times_csv(1e6, 1, 10,csv_path)
 
 
 def test_dec_mnist_n_times_csv():

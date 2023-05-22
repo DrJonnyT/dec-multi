@@ -1,4 +1,4 @@
-from mnist.mnist import get_mnist
+from mnist.mnist import get_mnist, subsample_digits
 import pandas as pd
 import numpy as np
 from sklearn.cluster import KMeans
@@ -176,7 +176,7 @@ def kmeans_mnist_n_times(n10, n_runs, n_clusters, resample=True):
     return df_kmeans, df_labels
 
 
-def kmeans_mnist_n_times_csv(n10, n_runs, n_clusters,csv_file,resample=True):
+def kmeans_mnist_n_times_csv(n_digits, n_runs, n_clusters,csv_file,overwrite=False,**kwargs):
     """
     Run kmeans_mnist_n_times and save the results to a csv file
 
@@ -200,16 +200,108 @@ def kmeans_mnist_n_times_csv(n10, n_runs, n_clusters,csv_file,resample=True):
 
     """
     
-    if n10 > 6313:
-            raise Exception("n10 can only be max size of 6313 as there are only 6313 copies of 5 in the mnist data")
+    #Sort through kwargs
+    if "resample" in kwargs:
+        resample = kwargs.get("resample")
+    else:
+        resample=False
+    if n_digits <=0: #Flag for doing the full dataset
+        resample=False
+    if "balanced" in kwargs:
+        balanced = kwargs.get("balanced")
+    else:
+        balanced = False
+       
+    #Cannot resample if picking digits at random
+    if balanced is True:
+        resample = False
+        
+    #Check if there are enough digits in mnist dataset
+    if n_digits > 63130 and balanced is True:
+        raise Exception("""n_digits can only be max size of 63130 if balanced
+                        is True as there are only 6313 copies of 5 in the mnist
+                        data""")
+    elif n_digits > 70000:
+        raise Exception(""""n_digits can only be max size of 70000 as there are
+                        only 70000 digits in the mnist data""")
+                        
+                        
+    #Get mnist dataset
+    X,Y = get_mnist()
     
-    #Work out the path of the labels csv file
-    labels_file = splitext(csv_file)[0] + "_labels" + splitext(csv_file)[1]
+    #Make empty dataframes
+    df_kmeans = pd.DataFrame(index=[f'sample_{i}' for i in range(n_digits)])
+    df_labels = pd.DataFrame(index=[f'sample_{i}' for i in range(n_digits)])
+    df_indices = pd.DataFrame(index=[f'sample_{i}' for i in range(n_digits)])
     
-    df_kmeans, df_labels = kmeans_mnist_n_times(n10, n_runs, n_clusters,resample=resample)
-    
-    #Make the directory if needs be and save the files
+    #Check if file exists- if not it needs creating
+    #Note that newcsv can also be true from the input arguments
     csv_path = Path(csv_file)
+    if csv_path.exists() is False:
+        #If file doesn't exists, make a new file ('overwrite' an empty space)
+        overwrite = True
+    
+    #Work out the path of the labels csv file, and indices csv file
+    labels_file = splitext(csv_file)[0] + "_labels" + splitext(csv_file)[1]
+    indices_file = splitext(csv_file)[0] + "_indices" + splitext(csv_file)[1]
+    
+    #Prepare the output files
+    #Make sure the parent directory exists
     csv_path.parent.mkdir(parents=True, exist_ok=True)
-    df_kmeans.to_csv(csv_file)
-    df_labels.to_csv(labels_file)
+    if overwrite:
+        #Make new CSVs for output.
+        df_kmeans.to_csv(csv_file)
+        df_labels.to_csv(labels_file)
+        df_indices.to_csv(indices_file)
+        
+    #Subsample the digits
+    Xsub, Ysub, indices = subsample_digits(X,Y,n_digits=n_digits,balanced=balanced)
+    
+    
+    #Main while loop running through kmeans
+    counter = 0
+    while counter < 10000:
+        #Load the csv file and see how many runs have been completed so far
+        df_kmeans = pd.read_csv(csv_file,index_col=0)
+        #Load the labels csv
+        df_labels =  pd.read_csv(labels_file,index_col=0)
+        #Load the labels csv
+        df_indices =  pd.read_csv(indices_file,index_col=0)
+        
+        n_runs_completed = df_kmeans.shape[1]
+        
+        #Put this break in explicitly
+        if n_runs_completed >= n_runs:
+            break
+        
+        if resample==True:
+            #Subsample the digits
+            Xsub, Ysub, indices = subsample_digits(X,Y,n_digits=n_digits,balanced=balanced)
+        
+
+        #Run kmeans
+        #Control the number of threads in kmeans
+        with threadpool_limits(limits=1, user_api='blas'):
+            #Ignore the warning about the memory leak
+            warnings.filterwarnings('ignore')
+        
+            # Fit the k-means model to the data
+            kmeans = KMeans(n_clusters=n_clusters).fit(Xsub)
+
+        #Add a column for the kmeans cluster labels, then save
+        df_kmeans[f'kmeans_{n_runs_completed+1}'] = kmeans.labels_
+        df_kmeans.to_csv(csv_file)
+        
+        #Also save labels
+        df_labels[f'labels_{n_runs_completed+1}'] = Ysub
+        df_labels.to_csv(labels_file)
+        
+
+        #Also save indices
+        df_indices[f'indices_{n_runs_completed+1}'] = indices
+        df_indices.to_csv(indices_file)
+               
+        
+        counter = counter + 1
+    
+    return df_kmeans, df_labels, df_indices
