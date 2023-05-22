@@ -16,6 +16,7 @@ from shutil import rmtree
 import pytest
 import os
 import tensorflow as tf
+import subprocess
 
 
 
@@ -177,8 +178,31 @@ def test_dec_mnist_n_times_csv():
                         verbose=0,balanced=False)
         
 
+
+
+def get_total_vram():
+    """
+    Work out the total VRAM of the GPU in the system
+
+    Returns
+    -------
+    total_vram : int
+        Total VRAM (MB).
+
+    """
+    try:
+        output = subprocess.check_output(['nvidia-smi', '--query-gpu=memory.total', '--format=csv,noheader,nounits'])
+        total_vram = int(output.strip())
+        return total_vram
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        print("Error: Failed to retrieve total VRAM.")
+        return 0
+
+
 #Same as test_dec_mnist_n_times_csv but with full mnist dataset
 #Will fail if you don't have enough VRAM
+@pytest.mark.skipif(get_total_vram() < 6192,
+                    reason="Insufficient VRAM for the test_dec_mnist_n_times_csv_full.")
 def test_dec_mnist_n_times_csv_full():
     csv_path = "./temp/dec_mnist_full.csv"
     labels_path = "./temp/dec_mnist_full_labels.csv"
