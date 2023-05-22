@@ -2,9 +2,6 @@
 
 import pandas as pd
 import matplotlib.pyplot as plt
-import sys
-sys.path.append('../')  #Add parent foldet to path so imports work
-
 
 #Load aggregated labels for 10000 iterations
 output_folder = "../output_unbalanced_10000_5000/"

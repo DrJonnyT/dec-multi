@@ -7,8 +7,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import warnings
 import sys
-sys.path.append('../')  #Add parent foldet to path so imports work
-
+# setting path
+sys.path.append('../')
 
 
 #Parameters file

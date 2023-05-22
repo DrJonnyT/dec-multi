@@ -5,8 +5,6 @@ tf.config.experimental.set_memory_growth(physical_devices[0], True)
 
 import shutil
 import os
-import sys
-sys.path.append('../')  #Add parent foldet to path so imports work
 
 
 from multi.dec import dec_mnist_n_times_csv
