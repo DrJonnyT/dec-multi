@@ -20,7 +20,7 @@ import warnings
 #Load multiple cluster labels
 output_folder = "../output_unbalanced_10000_5000/"
 #An array of the number of copies of each digit to use
-n_digits_array = [100,250,500,750,1000,2500,5000,7500,10000,25000]#,50000,70000]
+n_digits_array = [100,250,500,750,1000,2500,5000]#,7500,10000,25000]#,50000,70000]
 
 
 columns = ['acc_mean','acc_stdev','acc_mode','acc_pla','time_mode_s','time_pla_s']
@@ -129,6 +129,68 @@ for n_digits in df_agg_data_100.index:
     acc_arr = accuracy_arr(df_dec,true_labels)
     df_agg_data_100.loc[n_digits]['acc_mean'] = np.mean(acc_arr)
     df_agg_data_100.loc[n_digits]['acc_stdev'] = np.std(acc_arr)
+
+
+#Export data
+df_agg_data_100.to_csv(output_folder + 'df_agg_data_100.csv')
+df_labels_mode_100 = pd.DataFrame(labels_mode_100).T
+df_labels_mode_100.columns = n_digits_array
+df_labels_mode_100.index = df_dec.index
+df_labels_mode_100.to_csv(output_folder + 'df_labels_mode_100.csv')
+df_labels_pla_100 = pd.DataFrame(labels_pla_100).T
+df_labels_pla_100.columns = n_digits_array
+df_labels_pla_100.index = df_dec.index
+df_labels_pla_100.to_csv(output_folder + 'df_labels_pla_100.csv')
+
+
+
+#%%Repeat for kmeans
+output_folder = "../output_unbalanced_kmeans/"
+
+df_agg_data_kmeans = pd.DataFrame(index=n_digits_array,columns=columns)
+labels_mode_kmeans = []
+labels_pla_kmeans = []
+
+for n_digits in df_agg_data_kmeans.index:
+    print(f"Running for {n_digits} digits")
+    csv_path = output_folder + f"kmeans_{n_digits}.csv"
+    labels_path = output_folder + f"kmeans_{n_digits}_labels.csv"
+    
+    try:
+        df_kmeans = pd.read_csv(csv_path,index_col=0)
+        df_labels = pd.read_csv(labels_path,index_col=0)
+    except:
+        continue
+    true_labels = df_labels['labels_1']
+    
+    #Calc PLA labels
+    t_start = dt.datetime.now()
+    kmeans_labels_pla = prob_lab_agg(df_kmeans)
+    t_end = dt.datetime.now()
+    df_agg_data_kmeans.loc[n_digits]['time_pla_s'] = (t_end-t_start).total_seconds()
+    df_agg_data_kmeans.loc[n_digits]['acc_pla'] = cluster_acc(true_labels, kmeans_labels_pla)[0]
+    labels_pla_kmeans.append(kmeans_labels_pla)
+    
+    #Calc mode labels
+    t_start = dt.datetime.now()
+    df_kmeans_aligned = pd.DataFrame(index=df_kmeans.index)
+    #Ignore a fragmentation performance warning, it was quicker doing it this way
+    with warnings.catch_warnings():
+        warnings.simplefilter(action='ignore', category=Warning)
+        for col in df_kmeans.columns:
+            df_kmeans_aligned[col] = align_cluster_labels(df_kmeans.iloc[:,0],df_kmeans[col])
+
+    #Mode labels
+    kmeans_labels_mode = modal_labels(df_kmeans_aligned)
+    t_end = dt.datetime.now()
+    df_agg_data_kmeans.loc[n_digits]['time_mode_s'] = (t_end-t_start).total_seconds()
+    df_agg_data_kmeans.loc[n_digits]['acc_mode'] = cluster_acc(true_labels, kmeans_labels_mode)[0]
+    labels_mode_kmeans.append(kmeans_labels_mode)
+    
+    #Mean and stdev of single runs
+    acc_arr = accuracy_arr(df_kmeans,true_labels)
+    df_agg_data_kmeans.loc[n_digits]['acc_mean'] = np.mean(acc_arr)
+    df_agg_data_kmeans.loc[n_digits]['acc_stdev'] = np.std(acc_arr)
 
 
 #Export data
