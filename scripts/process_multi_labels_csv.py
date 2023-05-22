@@ -1,7 +1,8 @@
-"""Testing probabalistic labeling
-Based on this paper
+"""Aggregate cluster labels
+Either based on the mode label, or probabalistic label aggregation, based on
+this paper:
 https://dl.acm.org/doi/abs/10.1145/1081870.1081890
-Available here
+Available here:
 https://www.researchgate.net/publication/221654189_Combining_partitions_by_probabilistic_label_aggregation
 """
 
