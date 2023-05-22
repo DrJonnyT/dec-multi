@@ -11,8 +11,6 @@ Scripts to run kmeans and deep embedded clustering many times on different sized
 Scripts to process the results from clustering
 * process_results.py
 
-Folder of parameter files
-* params/
 
 Folder containing the forked (and modified) backend
 * keras_dec/
