@@ -264,6 +264,10 @@ def dec_mnist_n_times_csv(n_digits, n_runs, n_clusters, csv_file, overwrite=Fals
         #Load the labels csv
         df_labels =  pd.read_csv(labels_file,index_col=0)
         
+        #Load the labels csv
+        df_indices =  pd.read_csv(indices_file,index_col=0)        
+        
+        
         if resample==True:
             #Subsample the digits
             Xsub, Ysub, indices = subsample_digits(X,Y,n_digits=n_digits,balanced=balanced)
