@@ -10,6 +10,8 @@ Scripts to run kmeans and deep embedded clustering many times on different sized
 
 Scripts to process the results from clustering
 * process_results.py
+* process_full_mnist_results_nruns.py
+* process_multi_labels_csv.py
 
 
 Folder containing the forked (and modified) backend
