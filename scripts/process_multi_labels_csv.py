@@ -20,7 +20,7 @@ import warnings
 #Load multiple cluster labels
 output_folder = "../output_unbalanced_10000_5000/"
 #An array of the number of copies of each digit to use
-n_digits_array = [100,250,500,750,1000,2500,5000]#,7500,10000,25000]#,50000,70000]
+n_digits_array = [100,250,500,750,1000,2500,5000,7500,10000,25000,50000,70000]
 
 
 columns = ['acc_mean','acc_stdev','acc_mode','acc_pla','time_mode_s','time_pla_s']
@@ -194,12 +194,12 @@ for n_digits in df_agg_data_kmeans.index:
 
 
 #Export data
-df_agg_data_100.to_csv(output_folder + 'df_agg_data_100.csv')
-df_labels_mode_100 = pd.DataFrame(labels_mode_100).T
-df_labels_mode_100.columns = n_digits_array
-df_labels_mode_100.index = df_dec.index
-df_labels_mode_100.to_csv(output_folder + 'df_labels_mode_100.csv')
-df_labels_pla_100 = pd.DataFrame(labels_pla_100).T
-df_labels_pla_100.columns = n_digits_array
-df_labels_pla_100.index = df_dec.index
-df_labels_pla_100.to_csv(output_folder + 'df_labels_pla_100.csv')
+df_agg_data_kmeans.to_csv(output_folder + 'df_agg_data_kmeans.csv')
+df_labels_mode_kmeans = pd.DataFrame(labels_mode_kmeans).T
+df_labels_mode_kmeans.columns = n_digits_array
+df_labels_mode_kmeans.index = df_dec.index
+df_labels_mode_kmeans.to_csv(output_folder + 'df_labels_mode_kmeans.csv')
+df_labels_pla_kmeans = pd.DataFrame(labels_pla_kmeans).T
+df_labels_pla_kmeans.columns = n_digits_array
+df_labels_pla_kmeans.index = df_dec.index
+df_labels_pla_kmeans.to_csv(output_folder + 'df_labels_pla_kmeans.csv')
