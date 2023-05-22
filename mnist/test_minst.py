@@ -1,4 +1,4 @@
-from mnist.mnist import get_mnist, subsample_mnist
+from mnist.mnist import get_mnist, subsample_mnist, subsample_digits
 from mnist.plot import plot_mnist_10x10
 import numpy as np
 
@@ -29,3 +29,25 @@ def test_plot_mnist_10x10():
     
     fig,ax = plot_mnist_10x10(X, Y, "test title")
     #Just see if it gets this far without an error
+    
+    
+    
+def test_subsample_digits():
+    X,Y = get_mnist()
+    
+    #First do 100 digits, balanced
+    Xsub, Ysub = subsample_digits(X,Y,balanced=True)
+    assert len(Xsub) == 100
+    assert len(Ysub) == 100
+    
+    #Now 10000 unbalanced
+    Xsub, Ysub = subsample_digits(X,Y,n_digits=10000)
+    assert len(Xsub) == 10000
+    assert len(Ysub) == 10000
+    #Check you dont have balanced numbers of each digit
+    assert np.array_equal( np.histogram(Ysub) , np.tile(10,10)) is False
+    
+    #Now all the digits
+    Xsub, Ysub = subsample_digits(X,Y,n_digits=0)
+    assert len(Ysub) == 70000
+    
