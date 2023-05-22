@@ -1,3 +1,6 @@
+import sys
+# setting path
+sys.path.append('../')
 from multi.kmeans import kmeans_mnist_n_times_csv
 import params.params_no_resample as params
 

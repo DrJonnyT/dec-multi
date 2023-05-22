@@ -6,6 +6,10 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import warnings
+import sys
+# setting path
+sys.path.append('../')
+
 
 #Parameters file
 import params.params_full_mnist as params
@@ -35,8 +39,8 @@ from keras_dec.functions import align_cluster_labels, cluster_acc, modal_labels
 
 
 #Not resampled, new code
-csv_path = "./output_unbalanced_1000_500/dec_250.csv"
-labels_path = "./output_unbalanced_1000_500/dec_250_labels.csv"
+csv_path = "../output_unbalanced_1000_500/dec_250.csv"
+labels_path = "../output_unbalanced_1000_500/dec_250_labels.csv"
 
 
 # #Old resampled data
