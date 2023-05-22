@@ -1,25 +1,10 @@
 # DEC-Keras
-Deep Embedding Clustering in Keras [https://arxiv.org/abs/1511.06335]
+Exploring Deep Embedding Clustering (DEC) using different sized datasets of MNIST digits. DEC is based on [the original paper by Xie et al.](https://arxiv.org/abs/1511.06335)
 
-Based on a fork from [the original by fferroni](https://github.com/fferroni/DEC-Keras)
-
-
-Scripts to run kmeans and deep embedded clustering many times on different sized samples from the mnist dataset and output the results to CSV:
-* run_kmeans_many_times.py
-* run_dec_many_times.py
-
-Scripts to process the results from clustering
-* process_results.py
-* process_full_mnist_results_nruns.py
-* process_multi_labels_csv.py
-
-
-Folder containing the forked (and modified) backend
-* keras_dec/
-
+This repo is based on a fork from [a Keras implementation of DEC by fferroni](https://github.com/fferroni/DEC-Keras).
 
 ## System requirements
-For full functionality, a GPU with >=6GB VRAM is required. Testing on a system with 4GB VRAM shows the system is unable to run with more than around 30000 images.
+For full functionality, a GPU with >=6GB VRAM is required. Testing on a system with 4GB VRAM shows the system is unable to run with more than around 30000 images. Even with 6GB VRAM, running DEC with the full MNIST dataset often runs out of VRAM and has to restart.
 
 ## Environment setup
 1. Use conda to create and activate new environment with most packages:
@@ -33,4 +18,18 @@ conda activate dec-keras
 python -m pip install "tensorflow<2.11"
 ```
 These instructions have been tested on Windows 10 native.
+
+
+## Typical workflow
+
+| | File | Estimated time | Function |
+| --- | --- | --- | --- |
+| 1. | run_kmeans_many_times.py | 30 minutes | Run kmeans many times on the MNIST digits and save to CSV. |
+| 2. | run_dec_many_times.py | A few hours to a few days depending on how many iterations | Run DEC many times on the MNIST digits and save to CSV. |
+| 3. | process_multi_labels_csv.py | 6 hours | Load the results from the above, calculate accuracy and aggregate labels using mode and probabalistic label aggregation. Save to CSV. |
+| 4. | plot_multi_labels_from_csv.py | A few seconds | Load aggegated labels accuracy and plot |
+
+
+
+
 
