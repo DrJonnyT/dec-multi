@@ -42,5 +42,5 @@ shutil.copyfile("./run_kmeans_many_times.py", output_folder+"run_kmeans_many_tim
 #Loop through different sized datasets
 for n_digits in n_digits_array:
     print(f"Running with {n_digits} of each digit")
-    csv_file = output_folder + f"dec_{n_digits}.csv"
+    csv_file = output_folder + f"kmeans_{n_digits}.csv"
     kmeans_mnist_n_times_csv(n_digits, n_runs, n_clusters,csv_file,balanced=False)
