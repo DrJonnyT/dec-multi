@@ -68,7 +68,16 @@ for n_digits in df_agg_data_10k.index:
     df_agg_data_10k.loc[n_digits]['acc_mean'] = np.mean(acc_arr)
     df_agg_data_10k.loc[n_digits]['acc_stdev'] = np.std(acc_arr)
 
-
+#Export data
+df_agg_data_10k.to_csv(output_folder + 'df_agg_data_10k.csv')
+df_labels_mode_10k = pd.DataFrame(labels_mode_10k).T
+df_labels_mode_10k.columns = n_digits_array
+df_labels_mode_10k.index = df_dec.index
+df_labels_mode_10k.to_csv(output_folder + 'df_labels_mode_10k.csv')
+df_labels_pla_10k = pd.DataFrame(labels_pla_10k).T
+df_labels_pla_10k.columns = n_digits_array
+df_labels_pla_10k.index = df_dec.index
+df_labels_pla_10k.to_csv(output_folder + 'df_labels_pla_10k.csv')
 
 #%%Repeat for 100 iterations in the clustering
 output_folder = "./output_unbalanced_100_50/"
@@ -119,33 +128,13 @@ for n_digits in df_agg_data_100.index:
     df_agg_data_100.loc[n_digits]['acc_stdev'] = np.std(acc_arr)
 
 
-
-
-
-
-#%%
-# t_start = dt.datetime.now()
-# dec_labels_pla = prob_lab_agg(df_dec)
-# t_end = dt.datetime.now()
-# t_delta = t_end - t_start
-
-
-# accuracy_pla = cluster_acc(labels, dec_labels_pla)[0]
-
-# #%%Compare to mode dec labels
-# df_dec_aligned = pd.DataFrame(index=df_dec.index)
-# #Ignore a fragmentation performance warning, it was quicker doing it this way
-# with warnings.catch_warnings():
-#     warnings.simplefilter(action='ignore', category=Warning)
-#     for col in df_dec.columns:
-#         df_dec_aligned[col] = align_cluster_labels(labels,df_dec[col])
-
-# #Mode labels
-# dec_mode_labels = modal_labels(df_dec_aligned)
-
-# accuracy_mode_labels = cluster_acc(labels, dec_mode_labels)[0]
-
-# #%%Accuracy of individual runs
-# accuracy_array = accuracy_arr(df_dec,labels)
-# accuracy_mean = np.mean(accuracy_array)
-
+#Export data
+df_agg_data_100.to_csv(output_folder + 'df_agg_data_100.csv')
+df_labels_mode_100 = pd.DataFrame(labels_mode_100).T
+df_labels_mode_100.columns = n_digits_array
+df_labels_mode_100.index = df_dec.index
+df_labels_mode_100.to_csv(output_folder + 'df_labels_mode_100.csv')
+df_labels_pla_100 = pd.DataFrame(labels_pla_100).T
+df_labels_pla_100.columns = n_digits_array
+df_labels_pla_100.index = df_dec.index
+df_labels_pla_100.to_csv(output_folder + 'df_labels_pla_100.csv')
