@@ -115,9 +115,10 @@ def test_kmeans_mnist_n_times_csv():
 def test_dec_mnist_n_times_csv():
     csv_path = "./temp/dec_mnist.csv"
     labels_path = "./temp/dec_mnist_labels.csv"
+    indices_path = "./temp/dec_mnist_indices.csv"
     
     #try:
-    df_dec, df_labels = dec_mnist_n_times_csv(100, 2, 10,csv_path,overwrite=True,
+    df_dec, df_labels, df_indices = dec_mnist_n_times_csv(100, 2, 10,csv_path,overwrite=True,
                     finetune_iters=1000,layerwise_pretrain_iters=500,iter_max=10,
                     verbose=0)
     # except:
@@ -137,15 +138,17 @@ def test_dec_mnist_n_times_csv():
     #Check they are the same from the csv
     df_dec_loaded = pd.read_csv(csv_path,index_col=0)
     df_labels_loaded = pd.read_csv(labels_path,index_col=0)
+    df_indices_loaded = pd.read_csv(indices_path,index_col=0)
     assert np.array_equal(df_dec.values,df_dec_loaded.values)
     assert np.array_equal(df_labels.values,df_labels_loaded.values)
+    assert np.array_equal(df_indices.values,df_indices_loaded.values)
     
     
     
     #Now append another 2 runs to this preexisting csv and test
     #2 + 2 = 4 runs in total
     #These 2 extra runs are balanced, so 10 of each digit
-    df_dec, df_labels = dec_mnist_n_times_csv(100, 4, 10,csv_path,overwrite=False,
+    df_dec, df_labels, df_indices = dec_mnist_n_times_csv(100, 4, 10,csv_path,overwrite=False,
                     finetune_iters=1000,layerwise_pretrain_iters=500,iter_max=10,
                     verbose=0,balanced=True)
     
