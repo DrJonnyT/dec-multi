@@ -9,6 +9,8 @@ https://www.researchgate.net/publication/221654189_Combining_partitions_by_proba
 import pandas as pd
 import numpy as np
 import datetime as dt
+import sys
+sys.path.append('../')  #Add parent folder to path so imports work
 
 from keras_dec.functions import align_cluster_labels, cluster_acc, modal_labels
 from multi.comparison import prob_lab_agg, accuracy_arr

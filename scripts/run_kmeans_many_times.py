@@ -1,5 +1,7 @@
 import shutil
 import os
+import sys
+sys.path.append('../')  #Add parent folder to path so imports work
 
 from multi.kmeans import kmeans_mnist_n_times_csv
 
@@ -20,7 +22,7 @@ output_folder = "../output_unbalanced_kmeans/"
 
 #Copy this file and params file into the output folder
 os.makedirs(os.path.dirname(output_folder), exist_ok=True)
-shutil.copyfile("./run_dec_many_times.py", output_folder+"run_dec_many_times.py")
+shutil.copyfile("./run_kmeans_many_times.py", output_folder+"run_kmeans_many_times.py")
 
 
 
