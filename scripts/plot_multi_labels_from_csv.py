@@ -64,6 +64,7 @@ axs[0].set_title('kmeans')
 
 plt.tight_layout()
 plt.show()
+plt.savefig("./cluster_labels_aggregation.png")
 
 
 #Plot the mode labels together on the same plot
@@ -73,3 +74,4 @@ df_agg_data_100.plot(y='acc_mode',ax=ax,c='tab:red',label='DEC 100 iters',marker
 df_agg_data_kmeans.plot(y='acc_mode',ax=ax,c='tab:grey',label='kmeans',marker='o')
 plt.tight_layout()
 plt.show()
+plt.savefig("./cluster_method_comparison.png")
