@@ -9,9 +9,6 @@ https://www.researchgate.net/publication/221654189_Combining_partitions_by_proba
 import pandas as pd
 import numpy as np
 import datetime as dt
-import sys
-# setting path
-sys.path.append('../')
 
 from keras_dec.functions import align_cluster_labels, cluster_acc, modal_labels
 from multi.comparison import prob_lab_agg, accuracy_arr
@@ -21,7 +18,7 @@ import warnings
 #Load multiple cluster labels
 output_folder = "../output_unbalanced_10000_5000/"
 #An array of the number of copies of each digit to use
-n_digits_array = [100,250,500,750,1000]#,2500,5000,7500,10000,25000,50000,70000]
+n_digits_array = [100,250,500,750,1000,2500,5000,7500,10000,25000]#,50000,70000]
 
 
 columns = ['acc_mean','acc_stdev','acc_mode','acc_pla','time_mode_s','time_pla_s']

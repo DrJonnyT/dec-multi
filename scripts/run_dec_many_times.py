@@ -6,9 +6,6 @@ tf.config.experimental.set_memory_growth(physical_devices[0], True)
 import shutil
 import os
 
-import sys
-# setting path
-sys.path.append('../')
 
 from multi.dec import dec_mnist_n_times_csv
 
@@ -23,7 +20,6 @@ n_runs = 25
 n_clusters = 10
 #Output folder
 output_folder = "../output_unbalanced_100_50/"
-#output_folder = r"D:/Dropbox (The University of Manchester)/Dropbox (The University of Manchester)/Complex-SOA/DEC/output_unbalanced_20_10/"
 
 
 #Copy this file and params file into the output folder
