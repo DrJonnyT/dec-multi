@@ -17,31 +17,59 @@ output_folder = "../output_unbalanced_100_50/"
 df_agg_data_100 = pd.read_csv(output_folder + 'df_agg_data_100.csv',
                               index_col = 0)
 
+#Load aggregated labels for kmeans
+output_folder = "../output_unbalanced_kmeans/"
+df_agg_data_kmeans = pd.read_csv(output_folder + 'df_agg_data_kmeans.csv',
+                              index_col = 0)
 
 
-#Plot data
-fig, ax = plt.subplots()
-ax.set_ylabel('Accuracy')
-ax.set_xlabel('Number of samples')
-ax.set_xscale('log')
 
-#Plot mean and stdev of single runs
-df_agg_data_10k.plot(y='acc_mean',ax=ax,c='tab:blue',label='10k iters, single runs')
-ax.fill_between(df_agg_data_10k.index,
+#Plot each of the 3 clustering types
+fig, axs = plt.subplots(3,1,figsize=(8,12),sharex=True,sharey=True)
+axs=axs.ravel()
+[ax.set_ylabel('Accuracy') for ax in axs]
+axs[0].set_xlabel('Number of samples')
+axs[0].set_xscale('log')
+
+#Plot 10k iterations DEC data
+df_agg_data_10k.plot(y='acc_mean',ax=axs[0],c='tab:blue',label='Single runs',linestyle='--')
+axs[0].fill_between(df_agg_data_10k.index,
                 df_agg_data_10k['acc_mean']+df_agg_data_10k['acc_stdev'], 
                 df_agg_data_10k['acc_mean']-df_agg_data_10k['acc_stdev'], color='tab:blue', alpha=0.2)
 
-df_agg_data_10k.plot(y='acc_mode',ax=ax,c='tab:purple', label='10k iters, mode')
-df_agg_data_10k.plot(y='acc_pla',ax=ax,c='cyan',label='10k iters, PLA')
+df_agg_data_10k.plot(y='acc_mode',ax=axs[0],c='midnightblue', label='Mode labels',marker='o')
+df_agg_data_10k.plot(y='acc_pla',ax=axs[0],c='royalblue',label='PLA',marker='s')
+axs[0].set_title('DEC 10000 iterations')
 
 
-#Do the same for the 100 iterations data
-df_agg_data_100.plot(y='acc_mean',ax=ax,c='tab:red',label='100 iters, single runs')
-ax.fill_between(df_agg_data_100.index,
+#Plot 100 iterations DEC data
+df_agg_data_100.plot(y='acc_mean',ax=axs[1],c='tab:red',label='Single runs',linestyle='--')
+axs[1].fill_between(df_agg_data_100.index,
                 df_agg_data_100['acc_mean']+df_agg_data_100['acc_stdev'], 
                 df_agg_data_100['acc_mean']-df_agg_data_100['acc_stdev'], color='tab:red', alpha=0.2)
 
-df_agg_data_100.plot(y='acc_mode',ax=ax,c='orange',label='100 iters, mode')
-df_agg_data_100.plot(y='acc_pla',ax=ax,c='yellow',label='100 iters, PLA')
+df_agg_data_100.plot(y='acc_mode',ax=axs[1],c='maroon',label='Mode labels',marker='o')
+df_agg_data_100.plot(y='acc_pla',ax=axs[1],c='orange',label='PLA',marker='s')
+axs[1].set_title('DEC 100 iterations')
+
+#Plot kmeans data
+df_agg_data_kmeans.plot(y='acc_mean',ax=axs[2],c='grey',label='Single runs',linestyle='--')
+axs[2].fill_between(df_agg_data_kmeans.index,
+                df_agg_data_kmeans['acc_mean']+df_agg_data_kmeans['acc_stdev'], 
+                df_agg_data_kmeans['acc_mean']-df_agg_data_kmeans['acc_stdev'], color='grey', alpha=0.2)
+
+df_agg_data_kmeans.plot(y='acc_mode',ax=axs[2],c='black',label='Mode labels',marker='o')
+df_agg_data_kmeans.plot(y='acc_pla',ax=axs[2],c='silver',label='PLA',marker='s')
+axs[0].set_title('kmeans')
+
+plt.tight_layout()
+plt.show()
 
 
+#Plot the mode labels together on the same plot
+fig, ax = plt.subplots(figsize=(8,5))
+df_agg_data_10k.plot(y='acc_mode',ax=ax,c='tab:blue', label='DEC 10k iters',marker='o')
+df_agg_data_100.plot(y='acc_mode',ax=ax,c='tab:red',label='DEC 100 iters',marker='o')
+df_agg_data_kmeans.plot(y='acc_mode',ax=ax,c='tab:grey',label='kmeans',marker='o')
+plt.tight_layout()
+plt.show()
