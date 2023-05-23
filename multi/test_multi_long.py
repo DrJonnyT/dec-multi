@@ -227,7 +227,7 @@ def get_total_vram():
 
 #Same as test_dec_mnist_n_times_csv but with full mnist dataset
 #Will fail if you don't have enough VRAM
-@pytest.mark.skipif(get_total_vram() < 6192,
+@pytest.mark.skipif(get_total_vram() < 6144,
                     reason="Insufficient VRAM for the test_dec_mnist_n_times_csv_full.")
 def test_dec_mnist_n_times_csv_full():
     csv_path = "./temp/dec_mnist_full.csv"
