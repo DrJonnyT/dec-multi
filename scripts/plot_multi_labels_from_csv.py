@@ -63,7 +63,7 @@ df_agg_data_kmeans.plot(y='acc_pla',ax=axs[2],c='silver',label='PLA',marker='s')
 axs[0].set_title('kmeans')
 
 plt.tight_layout()
-plt.show()
+#plt.show()
 plt.savefig("./cluster_labels_aggregation.png")
 
 
@@ -73,5 +73,5 @@ df_agg_data_10k.plot(y='acc_mode',ax=ax,c='tab:blue', label='DEC 10k iters',mark
 df_agg_data_100.plot(y='acc_mode',ax=ax,c='tab:red',label='DEC 100 iters',marker='o')
 df_agg_data_kmeans.plot(y='acc_mode',ax=ax,c='tab:grey',label='kmeans',marker='o')
 plt.tight_layout()
-plt.show()
+#plt.show()
 plt.savefig("./cluster_method_comparison.png")
