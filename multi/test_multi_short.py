@@ -4,7 +4,8 @@ from multi.kmeans import kmeans_n_times_csv
 
 import numpy as np
 import pandas as pd
-
+import os
+from shutil import rmtree
 
 def test_mean_rand_index():
     Xdata = [[0,0],[0.1,0.1],[0.15,0.15],[10,10],[10.1,10.1],[10.2,10.2]]
@@ -54,5 +55,16 @@ def test_prob_lab_agg():
     df_labels['labels_4'] = [1,0,0,1,0,0]
     labels_pla = prob_lab_agg(df_labels)
     assert cluster_acc(labels_pla,df_labels['labels_1'])[0] == 1
+    
+#After all tests completed, delete the temp directory
+def pytest_sessionfinish(session, exitstatus):
+    if os.path.isdir("./temp"):
+        rmtree("./temp")
+        
+def test_tidy():
+    try:
+        rmtree("./temp")
+    except:
+        raise Exception('Failed to delete temp folder in test_multi')
     
     
