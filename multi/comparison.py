@@ -154,7 +154,7 @@ def prob_lab_agg(df_labels,norm=False):
         Z = Z / p_i
     
     #Convert to csr matrix for (orders of magnitude!) faster NMF
-    Z = Z.tocsc()
+    Z = Z.tocsr()
     
     #Now run NMF
     #Settings more like what the paper talks about, but give wrong result if
