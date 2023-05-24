@@ -2,6 +2,7 @@
 
 import pandas as pd
 import matplotlib.pyplot as plt
+from matplotlib.ticker import ScalarFormatter
 import sys
 sys.path.append('../')  #Add parent folder to path so imports work
 
@@ -25,7 +26,7 @@ df_agg_data_kmeans = pd.read_csv(output_folder + 'df_agg_data_kmeans.csv',
 
 
 #Plot each of the 3 clustering types
-fig, axs = plt.subplots(3,1,figsize=(8,12),sharex=True,sharey=True)
+fig, axs = plt.subplots(3,1,figsize=(5,8),sharex=True,sharey=True)
 axs=axs.ravel()
 [ax.set_ylabel('Accuracy') for ax in axs]
 axs[0].set_xlabel('Number of samples')
@@ -40,6 +41,7 @@ axs[0].fill_between(df_agg_data_10k.index,
 df_agg_data_10k.plot(y='acc_mode',ax=axs[0],c='midnightblue', label='Mode labels',marker='o')
 df_agg_data_10k.plot(y='acc_pla',ax=axs[0],c='royalblue',label='PLA',marker='s')
 axs[0].set_title('DEC 10000 iterations')
+axs[0].legend(loc='lower right')
 
 
 #Plot 100 iterations DEC data
@@ -60,18 +62,25 @@ axs[2].fill_between(df_agg_data_kmeans.index,
 
 df_agg_data_kmeans.plot(y='acc_mode',ax=axs[2],c='black',label='Mode labels',marker='o')
 df_agg_data_kmeans.plot(y='acc_pla',ax=axs[2],c='silver',label='PLA',marker='s')
-axs[0].set_title('kmeans')
+axs[2].set_title('kmeans')
+
+axs[-1].set_xlabel("Number of samples")
+#axs[-1].set_xticks([100,1000,10000])
+axs[-1].get_xaxis().set_major_formatter(ScalarFormatter())
 
 plt.tight_layout()
 #plt.show()
-plt.savefig("./cluster_labels_aggregation.png")
+plt.savefig("./cluster_labels_aggregation.png",dpi=300)
 
 
 #Plot the mode labels together on the same plot
-fig, ax = plt.subplots(figsize=(8,5))
-df_agg_data_10k.plot(y='acc_mode',ax=ax,c='tab:blue', label='DEC 10k iters',marker='o')
-df_agg_data_100.plot(y='acc_mode',ax=ax,c='tab:red',label='DEC 100 iters',marker='o')
+fig, ax = plt.subplots(figsize=(4,3))
+df_agg_data_10k.plot(y='acc_mode',ax=ax,c='tab:blue', label='DEC 10k iterations',marker='o')
+df_agg_data_100.plot(y='acc_mode',ax=ax,c='tab:red',label='DEC 100 iterations',marker='o')
 df_agg_data_kmeans.plot(y='acc_mode',ax=ax,c='tab:grey',label='kmeans',marker='o')
+ax.set_xscale('log')
+ax.set_xlabel("Number of samples")
+ax.get_xaxis().set_major_formatter(ScalarFormatter())
 plt.tight_layout()
 #plt.show()
-plt.savefig("./cluster_method_comparison.png")
+plt.savefig("./cluster_method_comparison.png",dpi=300)
