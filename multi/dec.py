@@ -99,15 +99,15 @@ def dec_n_times_csv(X,Y, n, n_clusters, csv_file, newcsv=True, **kwargs):
             break
         
         try:
-            c = DeepEmbeddingClustering(n_clusters=n_clusters,
+            dec = DeepEmbeddingClustering(n_clusters=n_clusters,
                                         input_dim=np.shape(X)[1])
-            c.initialize(X, finetune_iters=finetune_iters,
+            dec.initialize(X, finetune_iters=finetune_iters,
                          layerwise_pretrain_iters=layerwise_pretrain_iters,
                          verbose=verbose)
-            c.cluster(X, iter_max=iter_max,save_interval=0)
+            dec.cluster(X, iter_max=iter_max,save_interval=0)
 
             #Add a column for the DEC cluster labels, then save    
-            df_dec[f'dec_{i+1}'] = c.q.argmax(1)
+            df_dec[f'dec_{i+1}'] = dec.q.argmax(1)
             df_dec.to_csv(csv_file)
             counter = counter + 1
         except:
@@ -274,15 +274,15 @@ def dec_mnist_n_times_csv(n_digits, n_runs, n_clusters, csv_file, overwrite=Fals
         
         try:
             #Run deep embedded clustering
-            c = DeepEmbeddingClustering(n_clusters=n_clusters,
+            dec = DeepEmbeddingClustering(n_clusters=n_clusters,
                                         input_dim=np.shape(X)[1])
-            c.initialize(Xsub, finetune_iters=finetune_iters,
+            dec.initialize(Xsub, finetune_iters=finetune_iters,
                          layerwise_pretrain_iters=layerwise_pretrain_iters,
                          verbose=verbose)
-            c.cluster(Xsub, iter_max=iter_max,save_interval=0)
-    
+            dec.cluster(Xsub, iter_max=iter_max,save_interval=0)
+
             #Add a column for the DEC cluster labels, then save
-            df_dec[f'dec_{n_runs_completed+1}'] = c.q.argmax(1)
+            df_dec[f'dec_{n_runs_completed+1}'] = dec.q.argmax(1)
             df_dec.to_csv(csv_file)
             
             #Also save labels
