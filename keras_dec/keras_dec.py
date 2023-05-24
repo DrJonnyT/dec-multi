@@ -124,6 +124,7 @@ class DeepEmbeddingClustering(object):
         self.layer_wise_autoencoders = []
         self.encoders = []
         self.decoders = []
+        self.ae_loss = []
         for i  in range(1, len(self.encoders_dims)):
             
             encoder_activation = 'linear' if i == (len(self.encoders_dims) - 1) else 'relu'
@@ -344,10 +345,12 @@ class DeepEmbeddingClustering(object):
                 loss = self.DEC.train_on_batch(X[index*self.batch_size::], self.p[index*self.batch_size::])
                 index = 0
                 sys.stdout.write('Loss %f' % loss)
+                self.ae_loss = loss
             else:
                 loss = self.DEC.train_on_batch(X[index*self.batch_size:(index+1) * self.batch_size],
                                                self.p[index*self.batch_size:(index+1) * self.batch_size])
                 sys.stdout.write('Loss %f' % loss)
+                self.ae_loss = loss
                 index += 1
 
             # save intermediate
