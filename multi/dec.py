@@ -223,6 +223,7 @@ def dec_mnist_n_times_csv(n_digits, n_runs, n_clusters, csv_file, overwrite=Fals
     df_dec = pd.DataFrame(index=[f'sample_{i}' for i in range(n_digits)])
     df_labels = pd.DataFrame(index=[f'sample_{i}' for i in range(n_digits)])
     df_indices = pd.DataFrame(index=[f'sample_{i}' for i in range(n_digits)])
+    ds_loss = pd.Series()
       
     
     #Check if file exists- if not it needs creating
@@ -235,6 +236,7 @@ def dec_mnist_n_times_csv(n_digits, n_runs, n_clusters, csv_file, overwrite=Fals
     #Work out the path of the labels csv file, and indices csv file
     labels_file = splitext(csv_file)[0] + "_labels" + splitext(csv_file)[1]
     indices_file = splitext(csv_file)[0] + "_indices" + splitext(csv_file)[1]
+    loss_file = splitext(csv_file)[0] + "_aeloss" + splitext(csv_file)[1]
     
     #Prepare the output files
     #Make sure the parent directory exists
@@ -244,6 +246,7 @@ def dec_mnist_n_times_csv(n_digits, n_runs, n_clusters, csv_file, overwrite=Fals
         df_dec.to_csv(csv_file)
         df_labels.to_csv(labels_file)
         df_indices.to_csv(indices_file)
+        ds_loss.to_csv(loss_file)
     
     #Subsample the digits
     Xsub, Ysub, indices = subsample_digits(X,Y,n_digits=n_digits,balanced=balanced)
@@ -264,8 +267,11 @@ def dec_mnist_n_times_csv(n_digits, n_runs, n_clusters, csv_file, overwrite=Fals
         #Load the labels csv
         df_labels =  pd.read_csv(labels_file,index_col=0)
         
-        #Load the labels csv
-        df_indices =  pd.read_csv(indices_file,index_col=0)        
+        #Load the indices csv
+        df_indices =  pd.read_csv(indices_file,index_col=0)
+
+        #Load the loss csv
+        ds_loss =  pd.read_csv(loss_file,index_col=0).squeeze("columns")
         
         
         if resample==True:
@@ -293,6 +299,10 @@ def dec_mnist_n_times_csv(n_digits, n_runs, n_clusters, csv_file, overwrite=Fals
             df_indices[f'indices_{n_runs_completed+1}'] = indices
             df_indices.to_csv(indices_file)
             
+            #Also save loss
+            ds_loss[f'loss_{n_runs_completed+1}'] = dec.ae_loss
+            ds_loss.to_csv(loss_file)
+            
             n_runs_completed = n_runs_completed + 1
         except:
             num_fails = num_fails + 1
@@ -307,4 +317,4 @@ def dec_mnist_n_times_csv(n_digits, n_runs, n_clusters, csv_file, overwrite=Fals
         
             
 
-    return df_dec, df_labels, df_indices
+    return df_dec, df_labels, df_indices, ds_loss
