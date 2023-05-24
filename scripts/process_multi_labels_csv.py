@@ -89,7 +89,7 @@ labels_mode_100 = []
 labels_pla_100 = []
 
 for n_digits in df_agg_data_100.index:
-    print(f"Running for {n_digits} digits")
+    print(f"Running for {n_digits} digits",flush=True)
     csv_path = output_folder + f"dec_{n_digits}.csv"
     labels_path = output_folder + f"dec_{n_digits}_labels.csv"
     
@@ -151,7 +151,7 @@ labels_mode_kmeans = []
 labels_pla_kmeans = []
 
 for n_digits in df_agg_data_kmeans.index:
-    print(f"Running for {n_digits} digits")
+    print(f"Running for {n_digits} digits",flush=True)
     csv_path = output_folder + f"kmeans_{n_digits}.csv"
     labels_path = output_folder + f"kmeans_{n_digits}_labels.csv"
     
