@@ -1,4 +1,4 @@
-# DEC-Keras
+# dec-multi
 Exploring Deep Embedding Clustering (DEC) using different sized datasets of MNIST digits. DEC is based on [the original paper by Xie et al.](https://arxiv.org/abs/1511.06335)
 
 This repo is based on a fork from [a Keras implementation of DEC by fferroni](https://github.com/fferroni/DEC-Keras).
