@@ -143,9 +143,10 @@ def test_dec_mnist_n_times_csv():
     csv_path = "./temp/dec_mnist.csv"
     labels_path = "./temp/dec_mnist_labels.csv"
     indices_path = "./temp/dec_mnist_indices.csv"
+    loss_path = "./temp/dec_mnist_aeloss.csv"
     
     #try:
-    df_dec, df_labels, df_indices = dec_mnist_n_times_csv(100, 2, 10,csv_path,overwrite=True,
+    df_dec, df_labels, df_indices, ds_loss = dec_mnist_n_times_csv(100, 2, 10,csv_path,overwrite=True,
                     finetune_iters=1000,layerwise_pretrain_iters=500,iter_max=10,
                     verbose=0)
     # except:
@@ -153,10 +154,13 @@ def test_dec_mnist_n_times_csv():
     
     assert np.shape(df_dec) == (100,2)
     assert np.shape(df_labels) == (100,2)
+    assert np.shape(df_indices) == (100,2)
+    assert np.shape(ds_loss) == (2,)
     
     assert df_dec.index[0] == "sample_0"
     assert df_dec.columns[0] == "dec_1"
     assert df_labels.columns[0] == "labels_1"
+    assert ds_loss.index[0] == "loss_1"
     
     assert np.array_equal(np.unique(df_dec['dec_1']), [0,1,2,3,4,5,6,7,8,9])
     #Check it's not 10 of each digit in a row (what you would get from balanced)
@@ -166,27 +170,32 @@ def test_dec_mnist_n_times_csv():
     df_dec_loaded = pd.read_csv(csv_path,index_col=0)
     df_labels_loaded = pd.read_csv(labels_path,index_col=0)
     df_indices_loaded = pd.read_csv(indices_path,index_col=0)
+    ds_loss_loaded = pd.read_csv(loss_path,index_col=0).squeeze("columns")
     assert np.array_equal(df_dec.values,df_dec_loaded.values)
     assert np.array_equal(df_labels.values,df_labels_loaded.values)
     assert np.array_equal(df_indices.values,df_indices_loaded.values)
+    assert np.allclose(ds_loss.values,ds_loss_loaded.values)
     
     
     
     #Now append another 2 runs to this preexisting csv and test
     #2 + 2 = 4 runs in total
     #These 2 extra runs are balanced, so 10 of each digit
-    df_dec, df_labels, df_indices = dec_mnist_n_times_csv(100, 4, 10,csv_path,overwrite=False,
+    df_dec, df_labels, df_indices, ds_loss = dec_mnist_n_times_csv(100, 4, 10,csv_path,overwrite=False,
                     finetune_iters=1000,layerwise_pretrain_iters=500,iter_max=10,
                     verbose=0,balanced=True)
     
     assert np.shape(df_dec) == (100,4)
     assert np.shape(df_labels) == (100,4)
+    assert np.shape(df_indices) == (100,4)
+    assert np.shape(ds_loss) == (4,)
 
     assert df_dec.index[0] == "sample_0"
     assert df_dec.columns[0] == "dec_1"
     assert df_labels.columns[0] == "labels_1"
     assert df_dec.columns[-1] == "dec_4"
     assert df_labels.columns[-1] == "labels_4"
+    assert ds_loss.index[-1] == "loss_4"
 
     assert np.array_equal(np.unique(df_dec['dec_4']), [0,1,2,3,4,5,6,7,8,9])
     #10 of each digit
