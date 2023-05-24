@@ -1,4 +1,4 @@
-name: dec-keras
+name: dec-multi
 channels:
   - conda-forge 
   - nodefaults
