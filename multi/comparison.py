@@ -162,7 +162,7 @@ def prob_lab_agg(df_labels,norm=False):
     #model = NMF(n_components=10, init='random', beta_loss='kullback-leibler',solver='mu')  
     #More stable settings that get the right result with test data
     n_components = len(np.unique(df_labels))
-    model = NMF(n_components=n_components, init='nndsvd', beta_loss='frobenius',max_iter=250)  
+    model = NMF(n_components=n_components, init='nndsvd', beta_loss='frobenius',max_iter=500)  
     
     W = model.fit_transform(Z)
     H = model.components_
