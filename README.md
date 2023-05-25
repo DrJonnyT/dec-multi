@@ -26,7 +26,7 @@ These instructions have been tested on Windows 10 native.
 | --- | --- | --- | --- |
 | 1. | run_kmeans_many_times.py | 30 minutes | Run kmeans many times on the MNIST digits and save to CSV. |
 | 2. | run_dec_many_times.py | A few hours to a few days depending on how many iterations | Run DEC many times on the MNIST digits and save to CSV. |
-| 3. | process_multi_labels_csv.py | 6 hours | Load the results from the above, calculate accuracy and aggregate labels using mode and probabalistic label aggregation. Save to CSV. |
-| 4. | plot_multi_labels_from_csv.py | A few seconds | Load aggegated labels accuracy and plot |
+| 3. | process_multi_labels_csv.py | 10 hours | Load the results from the above, calculate accuracy and aggregate labels using mode and probabalistic label aggregation. Save to CSV. |
+| 4. | plot_multi_labels_from_csv.py | A few seconds | Load aggegated labels accuracy and plot. |
 
 Estimated times are provided running on a mid-range laptop CPU and low-end laptop GPU (in the year 2023)
