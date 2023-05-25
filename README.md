@@ -29,7 +29,4 @@ These instructions have been tested on Windows 10 native.
 | 3. | process_multi_labels_csv.py | 6 hours | Load the results from the above, calculate accuracy and aggregate labels using mode and probabalistic label aggregation. Save to CSV. |
 | 4. | plot_multi_labels_from_csv.py | A few seconds | Load aggegated labels accuracy and plot |
 
-
-
-
-
+Estimated times are provided running on a mid-range laptop CPU and low-end laptop GPU (in the year 2023)
