@@ -90,6 +90,7 @@ def accuracy_arr(df,labels):
 
 
 # Create a function to calculate Z[i] for a given sample_i
+#Used for multithreading
 def calculate_z(sample_i,n_samples,n_runs,df_labels_np):
     zarr_sample_i = np.zeros(n_samples)
     for run in range(n_runs):
@@ -119,7 +120,8 @@ def prob_lab_agg(df_labels,norm=False,multithread=False):
         If True, divide by the number of samples.
         If 'p_i', divide by p_i (equation (6) in the paper above).
     multithread : Bool, optional (default: False)
-        Use multithreading
+        Use multithreading. Be aware that it might actually be slower with
+        multithreading enabled.
 
     Returns
     -------
@@ -172,8 +174,6 @@ def prob_lab_agg(df_labels,norm=False,multithread=False):
     #Now run NMF
     #Settings more like what the paper talks about, but give wrong result if
     #you use test data with the same labels each time
-    #model = NMF(n_components=10, init='random', beta_loss='kullback-leibler',solver='mu')  
-    #More stable settings that get the right result with test data
     n_components = len(np.unique(df_labels))
     model = NMF(n_components=n_components, init='nndsvd', beta_loss='frobenius',max_iter=500)  
     
