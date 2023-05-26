@@ -35,12 +35,14 @@ for n_digits in df_agg_data_10k.index:
     labels_path = output_folder + f"dec_{n_digits}_labels.csv"
     
     try:
-        df_dec = pd.read_csv(csv_path,index_col=0)
-        df_labels = pd.read_csv(labels_path,index_col=0)
+        #Load just the first 25 columns
+        df_dec = pd.read_csv(csv_path,index_col=0).iloc[:,0:25]
+        df_labels = pd.read_csv(labels_path,index_col=0).iloc[:,0:25]        
     except:
+        print(f"Unable to load for {n_digits} digits",flush=True)
         continue
     true_labels = df_labels['labels_1']
-    
+
     #Calc PLA labels
     t_start = dt.datetime.now()
     dec_labels_pla = prob_lab_agg(df_dec)
@@ -94,9 +96,11 @@ for n_digits in df_agg_data_100.index:
     labels_path = output_folder + f"dec_{n_digits}_labels.csv"
     
     try:
-        df_dec = pd.read_csv(csv_path,index_col=0)
-        df_labels = pd.read_csv(labels_path,index_col=0)
+        #Load just the first 25 columns
+        df_dec = pd.read_csv(csv_path,index_col=0).iloc[:,0:25]
+        df_labels = pd.read_csv(labels_path,index_col=0).iloc[:,0:25]        
     except:
+        print(f"Unable to load for {n_digits} digits",flush=True)
         continue
     true_labels = df_labels['labels_1']
     
@@ -156,9 +160,11 @@ for n_digits in df_agg_data_kmeans.index:
     labels_path = output_folder + f"kmeans_{n_digits}_labels.csv"
     
     try:
-        df_kmeans = pd.read_csv(csv_path,index_col=0)
-        df_labels = pd.read_csv(labels_path,index_col=0)
+        #Load just the first 25 columns
+        df_kmeans = pd.read_csv(csv_path,index_col=0).iloc[:,0:25]
+        df_labels = pd.read_csv(labels_path,index_col=0).iloc[:,0:25]        
     except:
+        print(f"Unable to load for {n_digits} digits",flush=True)
         continue
     true_labels = df_labels['labels_1']
     
