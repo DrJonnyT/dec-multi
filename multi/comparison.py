@@ -3,6 +3,7 @@ from sklearn.metrics import adjusted_rand_score
 from sklearn.decomposition import NMF
 from itertools import combinations
 import scipy.sparse as sps
+from concurrent.futures import ThreadPoolExecutor
 
 from keras_dec.functions import cluster_acc
 
@@ -88,7 +89,15 @@ def accuracy_arr(df,labels):
 
 
 
-def prob_lab_agg(df_labels,norm=False):
+# Create a function to calculate Z[i] for a given sample_i
+def calculate_z(sample_i,n_samples,n_runs,df_labels_np):
+    zarr_sample_i = np.zeros(n_samples)
+    for run in range(n_runs):
+        zarr_sample_i = zarr_sample_i + (df_labels_np[:, run] == df_labels_np[sample_i, run]).astype(int)
+    return sample_i, zarr_sample_i
+
+
+def prob_lab_agg(df_labels,norm=False,multithread=False):
     """
     Probabalistic label aggregation function
     Based on the paper by Lange & Buhmann 2005, DOI:10.1145/1081870.1081890
@@ -104,11 +113,13 @@ def prob_lab_agg(df_labels,norm=False):
     df_labels : Pandas DataFrame
         Dataframe of cluster labels. Each row is a sample and each column a set
         of labels.
-    norm : Bool or string, optional
+    norm : Bool or string, optional (default: False)
         Choose whether or not to normalise the Z matrix. The default is False.
         If False, do not normalise it before doing NMF on it.
         If True, divide by the number of samples.
         If 'p_i', divide by p_i (equation (6) in the paper above).
+    multithread : Bool, optional (default: False)
+        Use multithreading
 
     Returns
     -------
@@ -127,31 +138,33 @@ def prob_lab_agg(df_labels,norm=False):
     you would then add 1 to each time. Difficult to make it work with a sparse
     matrix though as you can't just add to it"""
     
-    #Scipy sparse matrix as memory usage could be very high with numpy
-    Z = sps.lil_matrix((n_samples,n_samples),dtype='int32') 
     
-    #Loop through each sample
-    for sample_i in range(n_samples):
-        #Work out the number of times that other samples are in the same cluster
-        zarr_sample_i = np.zeros(n_samples)
-        #Loop through all runs
-        for run in range(n_runs):
-            #Get an array that's 1 if they are the same and 0 if different, and add
-            zarr_sample_i = zarr_sample_i + (df_labels_np[:,run] == df_labels_np[sample_i,run]).astype(int)
-            
-        Z[sample_i] = zarr_sample_i
+    #Scipy sparse matrix as memory usage could be very high with numpy
+    Z = sps.lil_matrix((n_samples,n_samples),dtype='int32')
+    
+    
+    if multithread:
+        # Loop through each sample and calculate Z concurrently
+        with ThreadPoolExecutor() as executor:
+            futures = [executor.submit(calculate_z, sample_i,n_samples,n_runs,df_labels_np) for sample_i in range(n_samples)]
+            for future in futures:
+                sample_i, zarr_sample_i = future.result()
+                Z[sample_i, :] = zarr_sample_i
+    else:
+        #Loop through each sample
+        for sample_i in range(n_samples):
+            #Work out the number of times that other samples are in the same cluster
+            zarr_sample_i = np.zeros(n_samples)
+            #Loop through all runs
+            for run in range(n_runs):
+                #Get an array that's 1 if they are the same and 0 if different, and add
+                zarr_sample_i = zarr_sample_i + (df_labels_np[:,run] == df_labels_np[sample_i,run]).astype(int)
+                
+            Z[sample_i] = zarr_sample_i
    
     
     #We now have the Z matrix, the number of times each sample appears with
-    #the same cluster label
-    
-    #Normalise if required
-    if norm is True:
-        n_runs = np.shape(df_labels)[1]
-        Z = Z / n_runs
-    elif norm == 'p_i':
-        p_i = np.sum(Z,axis=0) / np.sum(Z)
-        Z = Z / p_i
+    #the same cluster label  
     
     #Convert to csr matrix for (orders of magnitude!) faster NMF
     Z = Z.tocsr()

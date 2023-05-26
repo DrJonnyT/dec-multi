@@ -56,6 +56,21 @@ def test_prob_lab_agg():
     labels_pla = prob_lab_agg(df_labels)
     assert cluster_acc(labels_pla,df_labels['labels_1'])[0] == 1
     
+    #Compare multi thread and single
+    #Make a test dataset of nice labels, with a little bit of randomness
+    df_labels = pd.DataFrame()
+    for i in range(25):
+        df_labels[f'labels_{i}'] = np.tile(np.arange(0,10),10)
+    #Randomly add some 'noise'
+    indices_r = np.random.randint(0,np.shape(df_labels)[0],10)
+    indices_c = np.random.randint(0,np.shape(df_labels)[1],10)
+    df_labels.iloc[indices_r,indices_c] = np.random.randint(0,10,10)   
+    #Check labels come back similar for single thread or multi
+    labels_pla = prob_lab_agg(df_labels)
+    labels_pla_multi = prob_lab_agg(df_labels,multithread=True)
+    assert cluster_acc(labels_pla,labels_pla_multi)[0] == 1
+    
+    
 #After all tests completed, delete the temp directory
 def pytest_sessionfinish(session, exitstatus):
     if os.path.isdir("./temp"):
