@@ -81,6 +81,7 @@ df_agg_data_kmeans.plot(y='acc_mode',ax=ax,c='tab:grey',label='kmeans',marker='o
 ax.set_xscale('log')
 ax.set_xlabel("Number of samples")
 ax.get_xaxis().set_major_formatter(ScalarFormatter())
+ax.set_ylabel("Accuracy")
 plt.tight_layout()
 #plt.show()
 plt.savefig("./cluster_method_comparison.png",dpi=300)
