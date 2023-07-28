@@ -109,5 +109,5 @@ example.py
 #Bash stackdump if there's an error on windows
 bash.exe.stackdump
 
-#All png files
-*.png
+#png files in scripts folder
+scripts/*.png
